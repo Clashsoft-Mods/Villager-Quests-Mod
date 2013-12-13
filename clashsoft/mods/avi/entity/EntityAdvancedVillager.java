@@ -1,12 +1,9 @@
 package clashsoft.mods.avi.entity;
 
-import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import cpw.mods.fml.common.network.PacketDispatcher;
-import clashsoft.mods.avi.AdvancedVillagerInteraction;
 import clashsoft.mods.avi.api.IQuestProvider;
 import clashsoft.mods.avi.quest.Quest;
 
@@ -14,10 +11,8 @@ import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.world.World;
 
 public class EntityAdvancedVillager extends EntityVillager implements IQuestProvider
@@ -100,8 +95,10 @@ public class EntityAdvancedVillager extends EntityVillager implements IQuestProv
 			if (!this.worldObj.isRemote)
 			{
 				this.setCustomer(player);
-				this.sync();
-				player.openGui(AdvancedVillagerInteraction.instance, 0, this.worldObj, this.entityId, 0, 0);
+				
+				player.displayGUIMerchant(this, this.getCustomNameTag());
+				
+				//player.openGui(AdvancedVillagerInteraction.instance, 0, this.worldObj, this.entityId, 0, 0);
 			}
 			
 			return true;
@@ -109,46 +106,6 @@ public class EntityAdvancedVillager extends EntityVillager implements IQuestProv
 		else
 		{
 			return false;
-		}
-	}
-	
-	public void sync()
-	{
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		DataOutputStream dos = new DataOutputStream(bos);
-		
-		try
-		{
-			dos.writeInt(this.entityId);
-			
-			NBTTagCompound nbt = new NBTTagCompound();
-			this.writeEntityToNBT(nbt);
-			writeNBTTagCompound(nbt, dos);
-		}
-		catch (Exception ex)
-		{
-			ex.printStackTrace();
-		}
-		
-		Packet250CustomPayload packet = new Packet250CustomPayload("AVI", bos.toByteArray());
-		
-		if (this.worldObj.isRemote)
-			PacketDispatcher.sendPacketToServer(packet);
-		else
-			PacketDispatcher.sendPacketToAllPlayers(packet);
-	}
-	
-	public static void writeNBTTagCompound(NBTTagCompound par0NBTTagCompound, DataOutput par1DataOutput) throws IOException
-	{
-		if (par0NBTTagCompound == null)
-		{
-			par1DataOutput.writeShort(-1);
-		}
-		else
-		{
-			byte[] abyte = CompressedStreamTools.compress(par0NBTTagCompound);
-			par1DataOutput.writeShort((short) abyte.length);
-			par1DataOutput.write(abyte);
 		}
 	}
 }
