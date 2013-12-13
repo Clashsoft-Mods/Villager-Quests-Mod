@@ -4,10 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import clashsoft.mods.avi.AdvancedVillagerInteraction;
 import clashsoft.mods.avi.api.IQuestProvider;
 import clashsoft.mods.avi.quest.Quest;
 
 import net.minecraft.entity.passive.EntityVillager;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
@@ -78,4 +82,28 @@ public class EntityAdvancedVillager extends EntityVillager implements IQuestProv
 			this.quests.add(quest);
 		}
 	}
+	
+	/**
+     * Called when a player interacts with a mob. e.g. gets milk from a cow, gets into the saddle on a pig.
+     */
+    public boolean interact(EntityPlayer player)
+    {
+        ItemStack itemstack = player.inventory.getCurrentItem();
+        boolean flag = itemstack != null && itemstack.itemID == Item.monsterPlacer.itemID;
+
+        if (!flag && this.isEntityAlive() && !this.isTrading() && !this.isChild() && !player.isSneaking())
+        {
+            if (!this.worldObj.isRemote)
+            {
+                this.setCustomer(player);
+                player.openGui(AdvancedVillagerInteraction.instance, 0, this.worldObj, this.entityId, 0, 0);
+            }
+
+            return true;
+        }
+        else
+        {
+            return super.interact(player);
+        }
+    }
 }
