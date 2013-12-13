@@ -2,12 +2,11 @@ package clashsoft.mods.avi.common;
 
 import clashsoft.mods.avi.client.gui.GuiAdvancedVillager;
 import clashsoft.mods.avi.entity.EntityAdvancedVillager;
+import clashsoft.mods.avi.inventory.ContainerAdvancedVillager;
+import cpw.mods.fml.common.network.IGuiHandler;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.ContainerMerchant;
 import net.minecraft.world.World;
-
-import cpw.mods.fml.common.network.IGuiHandler;
 
 public class AVICommonProxy implements IGuiHandler
 {
@@ -21,7 +20,7 @@ public class AVICommonProxy implements IGuiHandler
 	{
 		if (ID == 0)
 		{
-			return new ContainerMerchant(player.inventory, getVillager(world, x), world);
+			return new ContainerAdvancedVillager(player.inventory, getVillager(world, x), world);
 		}
 		return null;
 	}

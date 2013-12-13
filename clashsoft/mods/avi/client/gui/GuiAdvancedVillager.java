@@ -6,6 +6,9 @@ import java.io.DataOutputStream;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
+import clashsoft.mods.avi.api.IQuestProvider;
+import clashsoft.mods.avi.inventory.ContainerAdvancedVillager;
+
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiButtonMerchant;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -29,7 +32,7 @@ public class GuiAdvancedVillager extends GuiContainer
 	public static ResourceLocation	tradeBackground	= new ResourceLocation("avi", "textures/gui/container/villager_trading.png");
 	
 	/** Instance of IMerchant interface. */
-	public IMerchant				theIMerchant;
+	public IQuestProvider			theVillager;
 	public int						currentRecipeIndex;
 	public String					name;
 	
@@ -38,10 +41,10 @@ public class GuiAdvancedVillager extends GuiContainer
 	public GuiButton				shuffleQuestsButton;
 	public GuiButton				questReward;
 	
-	public GuiAdvancedVillager(InventoryPlayer inventory, IMerchant merchant, World world, String name)
+	public GuiAdvancedVillager(InventoryPlayer inventory, IQuestProvider merchant, World world, String name)
 	{
-		super(new ContainerMerchant(inventory, merchant, world));
-		this.theIMerchant = merchant;
+		super(new ContainerAdvancedVillager(inventory, merchant, world));
+		this.theVillager = merchant;
 		this.name = name != null && name.length() >= 1 ? name : I18n.getString("entity.Villager.name");
 	}
 	
@@ -83,7 +86,7 @@ public class GuiAdvancedVillager extends GuiContainer
 	public void updateScreen()
 	{
 		super.updateScreen();
-		MerchantRecipeList merchantrecipelist = this.theIMerchant.getRecipes(this.mc.thePlayer);
+		MerchantRecipeList merchantrecipelist = this.theVillager.getRecipes(this.mc.thePlayer);
 		
 		if (merchantrecipelist != null)
 		{
@@ -138,7 +141,7 @@ public class GuiAdvancedVillager extends GuiContainer
 		int k = (this.width - this.xSize) / 2;
 		int l = (this.height - this.ySize) / 2;
 		this.drawTexturedModalRect(k, l, 0, 0, this.xSize, this.ySize);
-		MerchantRecipeList merchantrecipelist = this.theIMerchant.getRecipes(this.mc.thePlayer);
+		MerchantRecipeList merchantrecipelist = this.theVillager.getRecipes(this.mc.thePlayer);
 		
 		if (merchantrecipelist != null && !merchantrecipelist.isEmpty())
 		{
@@ -162,7 +165,7 @@ public class GuiAdvancedVillager extends GuiContainer
 	public void drawScreen(int par1, int par2, float par3)
 	{
 		super.drawScreen(par1, par2, par3);
-		MerchantRecipeList merchantrecipelist = this.theIMerchant.getRecipes(this.mc.thePlayer);
+		MerchantRecipeList merchantrecipelist = this.theVillager.getRecipes(this.mc.thePlayer);
 		
 		if (merchantrecipelist != null && !merchantrecipelist.isEmpty())
 		{
@@ -219,6 +222,6 @@ public class GuiAdvancedVillager extends GuiContainer
 	 */
 	public IMerchant getIMerchant()
 	{
-		return this.theIMerchant;
+		return this.theVillager;
 	}
 }
