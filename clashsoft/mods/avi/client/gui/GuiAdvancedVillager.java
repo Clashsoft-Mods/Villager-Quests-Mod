@@ -78,6 +78,8 @@ public class GuiAdvancedVillager extends GuiContainer
 	{
 		this.fontRenderer.drawString(this.name, this.xSize / 2 - this.fontRenderer.getStringWidth(this.name) / 2, 6, 4210752);
 		this.fontRenderer.drawString(I18n.getString("container.inventory"), 8, this.ySize - 96 + 2, 4210752);
+		
+		this.fontRenderer.drawString("It works!", 20, 20, 0x818181);
 	}
 	
 	/**

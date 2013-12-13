@@ -28,6 +28,7 @@ public class AdvancedVillagerInteraction
 	
 	public static AVIEventHandler eventHandler = new AVIEventHandler();
 	
+	@EventHandler
 	public void preLoad(FMLPreInitializationEvent event)
 	{
 		Configuration config = new Configuration(event.getSuggestedConfigurationFile());
@@ -37,6 +38,7 @@ public class AdvancedVillagerInteraction
 		config.save();
 	}
 	
+	@EventHandler
 	public void load(FMLInitializationEvent event)
 	{
 		NetworkRegistry.instance().registerGuiHandler(this, proxy);

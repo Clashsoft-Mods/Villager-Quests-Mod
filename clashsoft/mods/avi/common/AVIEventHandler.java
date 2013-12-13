@@ -4,10 +4,12 @@ import clashsoft.mods.avi.entity.EntityAdvancedVillager;
 
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 
 public class AVIEventHandler
 {
+	@ForgeSubscribe
 	public void onEntityJoined(EntityJoinWorldEvent event)
 	{
 		if (!event.world.isRemote)
