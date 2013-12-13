@@ -153,8 +153,8 @@ public class GuiAdvancedVillager extends GuiContainer
 				this.mc.getTextureManager().bindTexture(tradeBackground);
 				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 				GL11.glDisable(GL11.GL_LIGHTING);
-				this.drawTexturedModalRect(this.guiLeft + 83, this.guiTop + 21, 212, 0, 28, 21);
-				this.drawTexturedModalRect(this.guiLeft + 83, this.guiTop + 51, 212, 0, 28, 21);
+				this.drawTexturedModalRect(this.guiLeft + 55, this.guiTop + 21, 212, 0, 28, 21);
+				this.drawTexturedModalRect(this.guiLeft + 55, this.guiTop + 51, 212, 0, 28, 21);
 			}
 		}
 	}
