@@ -74,7 +74,7 @@ public class GuiAdvancedVillager extends GuiContainer
 	/**
 	 * Draw the foreground layer for the GuiContainer (everything in front of the items)
 	 */
-	protected void drawGuiContainerForegroundLayer(int par1, int par2)
+	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
 	{
 		this.fontRenderer.drawString(this.name, 60 - this.fontRenderer.getStringWidth(this.name) / 2, 6, 4210752);
 		this.fontRenderer.drawString(I18n.getString("container.inventory"), 8, this.ySize - 96 + 2, 4210752);
