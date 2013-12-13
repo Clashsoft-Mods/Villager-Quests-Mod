@@ -14,8 +14,6 @@ import clashsoft.mods.avi.quest.Quest;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.ContainerMerchant;
-import net.minecraft.inventory.InventoryMerchant;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -125,6 +123,7 @@ public class EntityAdvancedVillager extends EntityVillager implements IQuestProv
 	
 	public void displayGUIMerchant(EntityPlayerMP player)
 	{
+		player.openGui(AdvancedVillagerInteraction.instance, 0, this.worldObj, this.entityId, 0, 0);
 		MerchantRecipeList merchantrecipelist = this.getRecipes(player);
 		if (merchantrecipelist != null)
 		{
@@ -141,6 +140,5 @@ public class EntityAdvancedVillager extends EntityVillager implements IQuestProv
 				ioexception.printStackTrace();
 			}
 		}
-		player.openGui(AdvancedVillagerInteraction.instance, 0, this.worldObj, this.entityId, 0, 0);
 	}
 }
