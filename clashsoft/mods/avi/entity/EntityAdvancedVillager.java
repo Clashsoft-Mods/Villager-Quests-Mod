@@ -133,7 +133,7 @@ public class EntityAdvancedVillager extends EntityVillager implements IQuestProv
 				DataOutputStream dataoutputstream = new DataOutputStream(bytearrayoutputstream);
 				dataoutputstream.writeInt(player.currentWindowId);
 				merchantrecipelist.writeRecipiesToStream(dataoutputstream);
-				player.playerNetServerHandler.sendPacketToPlayer(new Packet250CustomPayload("MC|TrList", bytearrayoutputstream.toByteArray()));
+				player.playerNetServerHandler.sendPacketToPlayer(new Packet250CustomPayload("AVI", bytearrayoutputstream.toByteArray()));
 			}
 			catch (IOException ioexception)
 			{

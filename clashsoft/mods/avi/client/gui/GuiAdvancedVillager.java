@@ -11,7 +11,7 @@ import clashsoft.mods.avi.inventory.ContainerAdvancedVillager;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiButtonMerchant;
-import net.minecraft.client.gui.GuiMerchant;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.IMerchant;
@@ -24,7 +24,7 @@ import net.minecraft.village.MerchantRecipe;
 import net.minecraft.village.MerchantRecipeList;
 import net.minecraft.world.World;
 
-public class GuiAdvancedVillager extends GuiMerchant
+public class GuiAdvancedVillager extends GuiContainer
 {
 	public boolean					questMode		= false;
 	
@@ -43,10 +43,9 @@ public class GuiAdvancedVillager extends GuiMerchant
 	
 	public GuiAdvancedVillager(InventoryPlayer inventory, IQuestProvider merchant, World world, String name)
 	{
-		super(inventory, merchant, world, name);
+		super(new ContainerAdvancedVillager(inventory, merchant, world));
 		this.theVillager = merchant;
 		this.name = name != null && name.length() >= 1 ? name : I18n.getString("entity.Villager.name");
-		this.inventorySlots = new ContainerAdvancedVillager(inventory, merchant, world);
 	}
 	
 	/**
