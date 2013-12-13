@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import cpw.mods.fml.common.network.PacketDispatcher;
 import clashsoft.mods.avi.AdvancedVillagerInteraction;
 import clashsoft.mods.avi.api.IQuestProvider;
 import clashsoft.mods.avi.quest.Quest;
@@ -118,6 +119,8 @@ public class EntityAdvancedVillager extends EntityVillager implements IQuestProv
 		
 		try
 		{
+			dos.writeInt(this.entityId);
+			
 			NBTTagCompound nbt = new NBTTagCompound();
 			this.writeEntityToNBT(nbt);
 			writeNBTTagCompound(nbt, dos);
@@ -128,22 +131,11 @@ public class EntityAdvancedVillager extends EntityVillager implements IQuestProv
 		}
 		
 		Packet250CustomPayload packet = new Packet250CustomPayload("AVI", bos.toByteArray());
-	}
-	
-	public void onPacket(Packet250CustomPayload packet)
-	{
-		ByteArrayInputStream bis = new ByteArrayInputStream(packet.data);
-		DataInputStream dis = new DataInputStream(bis);
 		
-		try
-		{
-			NBTTagCompound nbt = readNBTTagCompound(dis);
-			this.readEntityFromNBT(nbt);
-		}
-		catch (Exception ex)
-		{
-			ex.printStackTrace();
-		}
+		if (this.worldObj.isRemote)
+			PacketDispatcher.sendPacketToServer(packet);
+		else
+			PacketDispatcher.sendPacketToAllPlayers(packet);
 	}
 	
 	public static void writeNBTTagCompound(NBTTagCompound par0NBTTagCompound, DataOutput par1DataOutput) throws IOException
@@ -157,22 +149,6 @@ public class EntityAdvancedVillager extends EntityVillager implements IQuestProv
 			byte[] abyte = CompressedStreamTools.compress(par0NBTTagCompound);
 			par1DataOutput.writeShort((short) abyte.length);
 			par1DataOutput.write(abyte);
-		}
-	}
-	
-	public static NBTTagCompound readNBTTagCompound(DataInput par0DataInput) throws IOException
-	{
-		short short1 = par0DataInput.readShort();
-		
-		if (short1 < 0)
-		{
-			return null;
-		}
-		else
-		{
-			byte[] abyte = new byte[short1];
-			par0DataInput.readFully(abyte);
-			return CompressedStreamTools.decompress(abyte);
 		}
 	}
 }
