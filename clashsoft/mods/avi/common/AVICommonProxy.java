@@ -1,6 +1,5 @@
 package clashsoft.mods.avi.common;
 
-import clashsoft.mods.avi.client.gui.GuiAdvancedVillager;
 import clashsoft.mods.avi.entity.EntityAdvancedVillager;
 import clashsoft.mods.avi.inventory.ContainerAdvancedVillager;
 import cpw.mods.fml.common.network.IGuiHandler;
@@ -28,12 +27,6 @@ public class AVICommonProxy implements IGuiHandler
 	@Override
 	public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z)
 	{
-		if (ID == 0)
-		{
-			EntityAdvancedVillager villager = getVillager(world, x);
-			return new GuiAdvancedVillager(player.inventory, villager, world, villager.getCustomNameTag());
-		}
 		return null;
 	}
-	
 }
