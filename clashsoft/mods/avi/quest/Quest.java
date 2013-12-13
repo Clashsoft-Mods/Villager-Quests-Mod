@@ -31,6 +31,12 @@ public class Quest
 		copy(original, this);
 	}
 	
+	public static Quest getQuestFromNBT(NBTTagCompound nbt)
+	{
+		Quest original = quests.get(nbt.getString("Name"));
+		return original;
+	}
+	
 	public static void copy(Quest src, Quest dest)
 	{
 		dest.name = src.name;
