@@ -30,10 +30,13 @@ public class GuiAdvancedVillager extends GuiContainer
 	
 	/** Instance of IMerchant interface. */
 	public IMerchant				theIMerchant;
-	public GuiButtonMerchant		nextRecipeButtonIndex;
-	public GuiButtonMerchant		previousRecipeButtonIndex;
 	public int						currentRecipeIndex;
 	public String					name;
+	
+	public GuiButtonMerchant		nextRecipeButtonIndex;
+	public GuiButtonMerchant		previousRecipeButtonIndex;
+	public GuiButton				shuffleQuestsButton;
+	public GuiButton				questReward;
 	
 	public GuiAdvancedVillager(InventoryPlayer inventory, IMerchant merchant, World world, String name)
 	{
@@ -50,10 +53,19 @@ public class GuiAdvancedVillager extends GuiContainer
 		super.initGui();
 		int i = (this.width - this.xSize) / 2;
 		int j = (this.height - this.ySize) / 2;
-		this.buttonList.add(this.nextRecipeButtonIndex = new GuiButtonMerchant(1, i + 120 + 27, j + 24 - 1, true));
-		this.buttonList.add(this.previousRecipeButtonIndex = new GuiButtonMerchant(2, i + 36 - 19, j + 24 - 1, false));
-		this.nextRecipeButtonIndex.enabled = false;
-		this.previousRecipeButtonIndex.enabled = false;
+		
+		if (!this.questMode)
+		{
+			this.buttonList.add(this.nextRecipeButtonIndex = new GuiButtonMerchant(1, i + 147, j + 23, true));
+			this.buttonList.add(this.previousRecipeButtonIndex = new GuiButtonMerchant(2, i + 17, j + 23, false));
+			this.nextRecipeButtonIndex.enabled = false;
+			this.previousRecipeButtonIndex.enabled = false;
+		}
+		else
+		{
+			this.buttonList.add(this.shuffleQuestsButton = new GuiButton(1, i + 120, j + 20, 40, 20, "Shuffle"));
+			this.buttonList.add(this.questReward = new GuiButton(2, i + 120, j + 45, 40, 20, "Reward"));
+		}
 	}
 	
 	/**
