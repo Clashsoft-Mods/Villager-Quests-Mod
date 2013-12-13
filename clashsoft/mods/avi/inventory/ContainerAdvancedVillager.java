@@ -25,9 +25,9 @@ public class ContainerAdvancedVillager extends Container
         this.theMerchant = merchant;
         this.theWorld = world;
         this.merchantInventory = new InventoryMerchant(inventory.player, merchant);
-        this.addSlotToContainer(new Slot(this.merchantInventory, 0, 36, 53));
-        this.addSlotToContainer(new Slot(this.merchantInventory, 1, 62, 53));
-        this.addSlotToContainer(new SlotMerchantResult(inventory.player, merchant, this.merchantInventory, 2, 120, 53));
+        this.addSlotToContainer(new Slot(this.merchantInventory, 0, 8, 53));
+        this.addSlotToContainer(new Slot(this.merchantInventory, 1, 34, 53));
+        this.addSlotToContainer(new SlotMerchantResult(inventory.player, merchant, this.merchantInventory, 2, 92, 53));
         int i;
 
         for (i = 0; i < 3; ++i)

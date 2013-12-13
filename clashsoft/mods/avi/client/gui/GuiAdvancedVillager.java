@@ -59,8 +59,8 @@ public class GuiAdvancedVillager extends GuiContainer
 		
 		if (!this.questMode)
 		{
-			this.buttonList.add(this.nextRecipeButtonIndex = new GuiButtonMerchant(1, i + 147, j + 23, true));
-			this.buttonList.add(this.previousRecipeButtonIndex = new GuiButtonMerchant(2, i + 17, j + 23, false));
+			this.buttonList.add(this.nextRecipeButtonIndex = new GuiButtonMerchant(1, i + 102, j + 4, true));
+			this.buttonList.add(this.previousRecipeButtonIndex = new GuiButtonMerchant(2, i + 6, j + 4, false));
 			this.nextRecipeButtonIndex.enabled = false;
 			this.previousRecipeButtonIndex.enabled = false;
 		}
@@ -76,10 +76,8 @@ public class GuiAdvancedVillager extends GuiContainer
 	 */
 	protected void drawGuiContainerForegroundLayer(int par1, int par2)
 	{
-		this.fontRenderer.drawString(this.name, this.xSize / 2 - this.fontRenderer.getStringWidth(this.name) / 2, 6, 4210752);
+		this.fontRenderer.drawString(this.name, 60 - this.fontRenderer.getStringWidth(this.name) / 2, 6, 4210752);
 		this.fontRenderer.drawString(I18n.getString("container.inventory"), 8, this.ySize - 96 + 2, 4210752);
-		
-		this.fontRenderer.drawString("It works!", 20, 20, 0x818181);
 	}
 	
 	/**
@@ -174,6 +172,7 @@ public class GuiAdvancedVillager extends GuiContainer
 			int k = (this.width - this.xSize) / 2;
 			int l = (this.height - this.ySize) / 2;
 			int i1 = this.currentRecipeIndex;
+			
 			MerchantRecipe merchantrecipe = (MerchantRecipe) merchantrecipelist.get(i1);
 			GL11.glPushMatrix();
 			ItemStack itemstack = merchantrecipe.getItemToBuy();
@@ -185,29 +184,29 @@ public class GuiAdvancedVillager extends GuiContainer
 			GL11.glEnable(GL11.GL_COLOR_MATERIAL);
 			GL11.glEnable(GL11.GL_LIGHTING);
 			itemRenderer.zLevel = 100.0F;
-			itemRenderer.renderItemAndEffectIntoGUI(this.fontRenderer, this.mc.getTextureManager(), itemstack, k + 36, l + 24);
-			itemRenderer.renderItemOverlayIntoGUI(this.fontRenderer, this.mc.getTextureManager(), itemstack, k + 36, l + 24);
+			itemRenderer.renderItemAndEffectIntoGUI(this.fontRenderer, this.mc.getTextureManager(), itemstack, k + 8, l + 24);
+			itemRenderer.renderItemOverlayIntoGUI(this.fontRenderer, this.mc.getTextureManager(), itemstack, k + 8, l + 24);
 			
 			if (itemstack1 != null)
 			{
-				itemRenderer.renderItemAndEffectIntoGUI(this.fontRenderer, this.mc.getTextureManager(), itemstack1, k + 62, l + 24);
-				itemRenderer.renderItemOverlayIntoGUI(this.fontRenderer, this.mc.getTextureManager(), itemstack1, k + 62, l + 24);
+				itemRenderer.renderItemAndEffectIntoGUI(this.fontRenderer, this.mc.getTextureManager(), itemstack1, k + 34, l + 24);
+				itemRenderer.renderItemOverlayIntoGUI(this.fontRenderer, this.mc.getTextureManager(), itemstack1, k + 34, l + 24);
 			}
 			
-			itemRenderer.renderItemAndEffectIntoGUI(this.fontRenderer, this.mc.getTextureManager(), itemstack2, k + 120, l + 24);
-			itemRenderer.renderItemOverlayIntoGUI(this.fontRenderer, this.mc.getTextureManager(), itemstack2, k + 120, l + 24);
+			itemRenderer.renderItemAndEffectIntoGUI(this.fontRenderer, this.mc.getTextureManager(), itemstack2, k + 92, l + 24);
+			itemRenderer.renderItemOverlayIntoGUI(this.fontRenderer, this.mc.getTextureManager(), itemstack2, k + 92, l + 24);
 			itemRenderer.zLevel = 0.0F;
 			GL11.glDisable(GL11.GL_LIGHTING);
 			
-			if (this.isPointInRegion(36, 24, 16, 16, par1, par2))
+			if (this.isPointInRegion(8, 24, 16, 16, par1, par2))
 			{
 				this.drawItemStackTooltip(itemstack, par1, par2);
 			}
-			else if (itemstack1 != null && this.isPointInRegion(62, 24, 16, 16, par1, par2))
+			else if (itemstack1 != null && this.isPointInRegion(34, 24, 16, 16, par1, par2))
 			{
 				this.drawItemStackTooltip(itemstack1, par1, par2);
 			}
-			else if (this.isPointInRegion(120, 24, 16, 16, par1, par2))
+			else if (this.isPointInRegion(92, 24, 16, 16, par1, par2))
 			{
 				this.drawItemStackTooltip(itemstack2, par1, par2);
 			}
