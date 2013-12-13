@@ -1,18 +1,27 @@
 package clashsoft.mods.avi.entity;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import clashsoft.mods.avi.AdvancedVillagerInteraction;
 import clashsoft.mods.avi.api.IQuestProvider;
 import clashsoft.mods.avi.quest.Quest;
 
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.ContainerMerchant;
+import net.minecraft.inventory.InventoryMerchant;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.network.packet.Packet250CustomPayload;
+import net.minecraft.village.MerchantRecipeList;
 import net.minecraft.world.World;
 
 public class EntityAdvancedVillager extends EntityVillager implements IQuestProvider
@@ -96,9 +105,14 @@ public class EntityAdvancedVillager extends EntityVillager implements IQuestProv
 			{
 				this.setCustomer(player);
 				
-				player.displayGUIMerchant(this, this.getCustomNameTag());
-				
-				//player.openGui(AdvancedVillagerInteraction.instance, 0, this.worldObj, this.entityId, 0, 0);
+				if (player instanceof EntityPlayerMP)
+				{
+					displayGUIMerchant((EntityPlayerMP) player);
+				}
+				else
+				{
+					player.displayGUIMerchant(this, this.getCustomNameTag());
+				}
 			}
 			
 			return true;
@@ -107,5 +121,26 @@ public class EntityAdvancedVillager extends EntityVillager implements IQuestProv
 		{
 			return false;
 		}
+	}
+	
+	public void displayGUIMerchant(EntityPlayerMP player)
+	{
+		MerchantRecipeList merchantrecipelist = this.getRecipes(player);
+		if (merchantrecipelist != null)
+		{
+			try
+			{
+				ByteArrayOutputStream bytearrayoutputstream = new ByteArrayOutputStream();
+				DataOutputStream dataoutputstream = new DataOutputStream(bytearrayoutputstream);
+				dataoutputstream.writeInt(player.currentWindowId);
+				merchantrecipelist.writeRecipiesToStream(dataoutputstream);
+				player.playerNetServerHandler.sendPacketToPlayer(new Packet250CustomPayload("MC|TrList", bytearrayoutputstream.toByteArray()));
+			}
+			catch (IOException ioexception)
+			{
+				ioexception.printStackTrace();
+			}
+		}
+		player.openGui(AdvancedVillagerInteraction.instance, 0, this.worldObj, this.entityId, 0, 0);
 	}
 }
