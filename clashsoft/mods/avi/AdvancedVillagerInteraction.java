@@ -47,6 +47,6 @@ public class AdvancedVillagerInteraction
 		NetworkRegistry.instance().registerGuiHandler(this, proxy);
 		MinecraftForge.EVENT_BUS.register(eventHandler);
 		
-		EntityList.addMapping(EntityAdvancedVillager.class, "AdvancedVillager", 120, 5651507, 12422002);
+		EntityList.addMapping(EntityAdvancedVillager.class, "Villager", 120, 5651507, 12422002);
 	}
 }

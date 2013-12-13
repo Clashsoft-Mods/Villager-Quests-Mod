@@ -103,7 +103,7 @@ public class EntityAdvancedVillager extends EntityVillager implements IQuestProv
         }
         else
         {
-            return super.interact(player);
+            return false;
         }
     }
 }
