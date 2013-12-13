@@ -4,6 +4,7 @@ import clashsoft.mods.avi.common.AVICommonProxy;
 import clashsoft.mods.avi.common.AVIEventHandler;
 import clashsoft.mods.avi.common.AVIPacketHandler;
 import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
