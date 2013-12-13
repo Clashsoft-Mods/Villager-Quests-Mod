@@ -14,17 +14,16 @@ public class AVIEventHandler
 	{
 		if (!event.world.isRemote)
 		{
-			if (event.entity instanceof EntityVillager)
+			if (event.entity.getClass() == EntityVillager.class)
 			{
 				EntityVillager villager = (EntityVillager) event.entity;
 				
 				NBTTagCompound copy = new NBTTagCompound();
-				event.entity.writeToNBT(copy);
+				villager.writeToNBT(copy);
+				villager.setDead();
 				
 				EntityAdvancedVillager villager2 = new EntityAdvancedVillager(event.world, villager.getProfession());
 				villager2.readFromNBT(copy);
-				
-				villager.setDead();
 				event.world.spawnEntityInWorld(villager2);
 			}
 		}
