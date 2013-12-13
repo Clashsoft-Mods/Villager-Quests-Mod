@@ -3,6 +3,7 @@ package clashsoft.mods.avi;
 import clashsoft.mods.avi.common.AVICommonProxy;
 import clashsoft.mods.avi.common.AVIEventHandler;
 import clashsoft.mods.avi.common.AVIPacketHandler;
+import clashsoft.mods.avi.entity.EntityAdvancedVillager;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
@@ -12,6 +13,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkRegistry;
 
+import net.minecraft.entity.EntityList;
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -44,5 +46,7 @@ public class AdvancedVillagerInteraction
 	{
 		NetworkRegistry.instance().registerGuiHandler(this, proxy);
 		MinecraftForge.EVENT_BUS.register(eventHandler);
+		
+		EntityList.addMapping(EntityAdvancedVillager.class, "Villager", 120, 5651507, 12422002);
 	}
 }
