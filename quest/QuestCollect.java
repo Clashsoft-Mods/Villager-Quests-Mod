@@ -2,7 +2,7 @@ package clashsoft.mods.avi.quest;
 
 import net.minecraft.item.ItemStack;
 
-public class QuestCollect extends Quest
+public class QuestCollect extends QuestType
 {
 	public ItemStack stack;
 	

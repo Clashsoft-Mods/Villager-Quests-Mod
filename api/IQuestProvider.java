@@ -1,12 +1,12 @@
 package clashsoft.mods.avi.api;
 
-import clashsoft.mods.avi.quest.Quest;
+import clashsoft.mods.avi.quest.QuestList;
 
 import net.minecraft.entity.IMerchant;
 
 public interface IQuestProvider extends IMerchant
 {
-	void shuffleQuests();
-	int getQuests();
-	Quest getQuest(int index);
+	public void shuffleQuests();
+	public QuestList getQuests();
+	public float getRewardMultiplier();
 }

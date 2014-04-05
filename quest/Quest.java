@@ -1,57 +1,74 @@
 package clashsoft.mods.avi.quest;
 
-import java.util.*;
+import java.util.Random;
+import clashsoft.mods.avi.api.IQuestProvider;
 
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.oredict.OreDictionary;
+import net.minecraft.network.PacketBuffer;
 
 public class Quest
 {
-	public static Map<String, Quest> questMap = new HashMap();
-	public static List<Quest> questList = new ArrayList();
+	private IQuestProvider provider;
+	private QuestType type;
 	
-	public static Quest collectWood = new QuestCollect("collect.wood", 1, new ItemStack(Blocks.log, 16, OreDictionary.WILDCARD_VALUE));
-	public static Quest collectStone = new QuestCollect("collect.stone", 2, new ItemStack(Blocks.stone));
-	
-	public String name;
-	public int reward;
-	
-	public Quest(String name, int reward)
+	public Quest()
 	{
-		this.name = name;
-		this.reward = reward;
-		
-		questMap.put(name, this);
-		questList.add(this);
+	}
+	
+	public Quest(IQuestProvider provider, QuestType type)
+	{
+		this.provider = provider;
+		this.type = type;
+	}
+	
+	public IQuestProvider getProvider()
+	{
+		return this.provider;
+	}
+	
+	public QuestType getType()
+	{
+		return this.type;
+	}
+	
+	public String getName()
+	{
+		return this.type.getName();
+	}
+
+	public int getReward()
+	{
+		return (int) (this.type.getReward() * this.provider.getRewardMultiplier());
+	}
+	
+	public void setProvider(IQuestProvider provider)
+	{
+		this.provider = provider;
+	}
+	
+	public static Quest random(IQuestProvider provider, Random seed)
+	{
+		QuestType type = QuestType.questList.get(seed.nextInt(QuestType.questList.size()));
+		return new Quest(provider, type);
 	}
 	
 	public void writeToNBT(NBTTagCompound nbt)
 	{
-		nbt.setString("Name", this.name);
+		nbt.setInteger("Type", this.type.getID());
+	}
+	
+	public void writeToBuffer(PacketBuffer buffer)
+	{
+		buffer.writeInt(this.type.getID());
 	}
 	
 	public void readFromNBT(NBTTagCompound nbt)
 	{
-		Quest original = questMap.get(nbt.getString("Name"));
-		copy(original, this);
+		this.type = QuestType.get(nbt.getInteger("Type"));
 	}
 	
-	public static Quest getQuestFromNBT(NBTTagCompound nbt)
+	public void readFromBuffer(PacketBuffer buffer)
 	{
-		Quest original = questMap.get(nbt.getString("Name"));
-		return original;
-	}
-	
-	public static Quest random(Random seed)
-	{
-		return questList.get(seed.nextInt(questList.size()));
-	}
-	
-	public static void copy(Quest src, Quest dest)
-	{
-		dest.name = src.name;
-		dest.reward = src.reward;
+		this.type = QuestType.get(buffer.readInt());
 	}
 }

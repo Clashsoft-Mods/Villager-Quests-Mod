@@ -9,6 +9,8 @@ import clashsoft.mods.avi.entity.EntityVillager2;
 import clashsoft.mods.avi.inventory.ContainerAdvancedVillager;
 import clashsoft.mods.avi.network.PacketSetRecipe;
 import clashsoft.mods.avi.network.PacketShuffleQuests;
+import clashsoft.mods.avi.quest.Quest;
+import clashsoft.mods.avi.quest.QuestType;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -36,6 +38,7 @@ public class GuiVillager2 extends GuiContainer
 	public MerchantButton			prevRecipeButton;
 	public GuiButton				shuffleQuestsButton;
 	public GuiButton				questReward;
+	public GuiButtonTradeMode		switchModeButton;
 	
 	public GuiVillager2(InventoryPlayer inventory, EntityVillager2 merchant, World world, String name)
 	{
@@ -48,11 +51,15 @@ public class GuiVillager2 extends GuiContainer
 	public void initGui()
 	{
 		super.initGui();
+		this.buttonList.clear();
+		
+		this.buttonList.add(this.switchModeButton = new GuiButtonTradeMode(0, this.guiLeft + 116, this.guiTop + 6));
+		this.switchModeButton.questMode = this.questMode;
 		
 		if (this.questMode)
 		{
-			this.buttonList.add(this.shuffleQuestsButton = new GuiButton(1, this.guiLeft + 120, this.guiTop + 20, 40, 20, "Shuffle"));
-			this.buttonList.add(this.questReward = new GuiButton(2, this.guiLeft + 120, this.guiTop + 45, 40, 20, "Reward"));
+			this.buttonList.add(this.shuffleQuestsButton = new GuiButton(1, this.guiLeft + 125, this.guiTop + 35, 45, 20, "Shuffle"));
+			this.buttonList.add(this.questReward = new GuiButton(2, this.guiLeft + 125, this.guiTop + 55, 45, 20, "Reward"));
 		}
 		else
 		{
@@ -66,20 +73,26 @@ public class GuiVillager2 extends GuiContainer
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
 	{
-		this.fontRendererObj.drawString(this.name, 60 - this.fontRendererObj.getStringWidth(this.name) / 2, 6, 4210752);
-		this.fontRendererObj.drawString(StatCollector.translateToLocal("container.inventory"), 8, this.ySize - 96 + 2, 4210752);
+		this.fontRendererObj.drawString(this.name, 60 - this.fontRendererObj.getStringWidth(this.name) / 2, this.questMode ? 6 : 10, 4210752);
+		if (!this.questMode)
+		{
+			this.fontRendererObj.drawString(StatCollector.translateToLocal("container.inventory"), 8, this.ySize - 94, 4210752);
+		}
 	}
 	
 	@Override
 	public void updateScreen()
 	{
 		super.updateScreen();
-		MerchantRecipeList recipeList = this.theVillager.getRecipes(this.mc.thePlayer);
 		
-		if (recipeList != null)
+		if (!this.questMode)
 		{
-			this.nextRecipeButton.enabled = this.currentRecipeIndex < recipeList.size() - 1;
-			this.prevRecipeButton.enabled = this.currentRecipeIndex > 0;
+			MerchantRecipeList recipeList = this.theVillager.getRecipes(this.mc.thePlayer);
+			if (recipeList != null)
+			{
+				this.nextRecipeButton.enabled = this.currentRecipeIndex < recipeList.size() - 1;
+				this.prevRecipeButton.enabled = this.currentRecipeIndex > 0;
+			}
 		}
 	}
 	
@@ -88,7 +101,12 @@ public class GuiVillager2 extends GuiContainer
 	{
 		boolean flag = false;
 		
-		if (button == this.nextRecipeButton)
+		if (button == this.switchModeButton)
+		{
+			this.questMode = !this.questMode;
+			this.initGui();
+		}
+		else if (button == this.nextRecipeButton)
 		{
 			++this.currentRecipeIndex;
 			flag = true;
@@ -114,22 +132,40 @@ public class GuiVillager2 extends GuiContainer
 	protected void drawGuiContainerBackgroundLayer(float partialTickTime, int mouseX, int mouseY)
 	{
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.mc.getTextureManager().bindTexture(tradeBackground);
+		this.mc.getTextureManager().bindTexture(this.questMode ? questBackground : tradeBackground);
 		this.drawTexturedModalRect(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
-		MerchantRecipeList merchantrecipelist = this.theVillager.getRecipes(this.mc.thePlayer);
 		
-		if (merchantrecipelist != null && !merchantrecipelist.isEmpty())
+		if (this.questMode)
 		{
-			int i1 = this.currentRecipeIndex;
-			MerchantRecipe merchantrecipe = (MerchantRecipe) merchantrecipelist.get(i1);
+			int k = this.guiLeft + 8;
+			int l = this.guiTop + 18;
 			
-			if (merchantrecipe.isRecipeDisabled())
+			for (Quest quest : this.theVillager.getQuests())
 			{
-				this.mc.getTextureManager().bindTexture(tradeBackground);
-				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-				GL11.glDisable(GL11.GL_LIGHTING);
-				this.drawTexturedModalRect(this.guiLeft + 55, this.guiTop + 21, 212, 0, 28, 21);
-				this.drawTexturedModalRect(this.guiLeft + 55, this.guiTop + 51, 212, 0, 28, 21);
+				this.fontRendererObj.drawStringWithShadow(quest.getName(), k, l, 0xFFFFFF);
+				
+				this.mc.getTextureManager().bindTexture(questBackground);
+				int icon = QuestType.rewardIcon(quest.getReward());
+				this.drawTexturedModalRect(k, l, 109 + icon * 12, 166, 12, 12);
+				l += 19;
+			}
+		}
+		else
+		{
+			MerchantRecipeList merchantrecipelist = this.theVillager.getRecipes(this.mc.thePlayer);
+			if (merchantrecipelist != null && !merchantrecipelist.isEmpty())
+			{
+				int i1 = this.currentRecipeIndex;
+				MerchantRecipe merchantrecipe = (MerchantRecipe) merchantrecipelist.get(i1);
+				
+				if (merchantrecipe.isRecipeDisabled())
+				{
+					this.mc.getTextureManager().bindTexture(tradeBackground);
+					GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+					GL11.glDisable(GL11.GL_LIGHTING);
+					this.drawTexturedModalRect(this.guiLeft + 55, this.guiTop + 21, 212, 0, 28, 21);
+					this.drawTexturedModalRect(this.guiLeft + 55, this.guiTop + 51, 212, 0, 28, 21);
+				}
 			}
 		}
 	}
@@ -138,55 +174,62 @@ public class GuiVillager2 extends GuiContainer
 	public void drawScreen(int mouseX, int mouseY, float partialTickTime)
 	{
 		super.drawScreen(mouseX, mouseY, partialTickTime);
-		MerchantRecipeList merchantrecipelist = this.theVillager.getRecipes(this.mc.thePlayer);
 		
-		if (merchantrecipelist != null && !merchantrecipelist.isEmpty())
+		if (this.questMode)
 		{
-			int i1 = this.currentRecipeIndex;
 			
-			MerchantRecipe merchantrecipe = (MerchantRecipe) merchantrecipelist.get(i1);
-			ItemStack input1 = merchantrecipe.getItemToBuy();
-			ItemStack input2 = merchantrecipe.getSecondItemToBuy();
-			ItemStack output = merchantrecipe.getItemToSell();
-			
-			GL11.glPushMatrix();
-			RenderHelper.enableGUIStandardItemLighting();
-			GL11.glDisable(GL11.GL_LIGHTING);
-			GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-			GL11.glEnable(GL11.GL_COLOR_MATERIAL);
-			GL11.glEnable(GL11.GL_LIGHTING);
-			itemRender.zLevel = 100.0F;
-			
-			itemRender.renderItemAndEffectIntoGUI(this.fontRendererObj, this.mc.getTextureManager(), input1, guiLeft + 8, guiTop + 24);
-			itemRender.renderItemOverlayIntoGUI(this.fontRendererObj, this.mc.getTextureManager(), input1, guiLeft + 8, guiTop + 24);
-			if (input2 != null)
+		}
+		else
+		{
+			MerchantRecipeList merchantrecipelist = this.theVillager.getRecipes(this.mc.thePlayer);
+			if (merchantrecipelist != null && !merchantrecipelist.isEmpty())
 			{
-				itemRender.renderItemAndEffectIntoGUI(this.fontRendererObj, this.mc.getTextureManager(), input2, guiLeft + 34, guiTop + 24);
-				itemRender.renderItemOverlayIntoGUI(this.fontRendererObj, this.mc.getTextureManager(), input2, guiLeft + 34, guiTop + 24);
+				int i1 = this.currentRecipeIndex;
+				
+				MerchantRecipe merchantrecipe = (MerchantRecipe) merchantrecipelist.get(i1);
+				ItemStack input1 = merchantrecipe.getItemToBuy();
+				ItemStack input2 = merchantrecipe.getSecondItemToBuy();
+				ItemStack output = merchantrecipe.getItemToSell();
+				
+				GL11.glPushMatrix();
+				RenderHelper.enableGUIStandardItemLighting();
+				GL11.glDisable(GL11.GL_LIGHTING);
+				GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+				GL11.glEnable(GL11.GL_COLOR_MATERIAL);
+				GL11.glEnable(GL11.GL_LIGHTING);
+				itemRender.zLevel = 100.0F;
+				
+				itemRender.renderItemAndEffectIntoGUI(this.fontRendererObj, this.mc.getTextureManager(), input1, guiLeft + 8, guiTop + 24);
+				itemRender.renderItemOverlayIntoGUI(this.fontRendererObj, this.mc.getTextureManager(), input1, guiLeft + 8, guiTop + 24);
+				if (input2 != null)
+				{
+					itemRender.renderItemAndEffectIntoGUI(this.fontRendererObj, this.mc.getTextureManager(), input2, guiLeft + 34, guiTop + 24);
+					itemRender.renderItemOverlayIntoGUI(this.fontRendererObj, this.mc.getTextureManager(), input2, guiLeft + 34, guiTop + 24);
+				}
+				itemRender.renderItemAndEffectIntoGUI(this.fontRendererObj, this.mc.getTextureManager(), output, guiLeft + 92, guiTop + 24);
+				itemRender.renderItemOverlayIntoGUI(this.fontRendererObj, this.mc.getTextureManager(), output, guiLeft + 92, guiTop + 24);
+				
+				itemRender.zLevel = 0.0F;
+				GL11.glDisable(GL11.GL_LIGHTING);
+				
+				if (this.func_146978_c(8, 24, 16, 16, mouseX, mouseY))
+				{
+					this.renderToolTip(input1, mouseX, mouseY);
+				}
+				else if (input2 != null && this.func_146978_c(34, 24, 16, 16, mouseX, mouseY))
+				{
+					this.renderToolTip(input2, mouseX, mouseY);
+				}
+				else if (this.func_146978_c(92, 24, 16, 16, mouseX, mouseY))
+				{
+					this.renderToolTip(output, mouseX, mouseY);
+				}
+				
+				GL11.glPopMatrix();
+				GL11.glEnable(GL11.GL_LIGHTING);
+				GL11.glEnable(GL11.GL_DEPTH_TEST);
+				RenderHelper.enableStandardItemLighting();
 			}
-			itemRender.renderItemAndEffectIntoGUI(this.fontRendererObj, this.mc.getTextureManager(), output, guiLeft + 92, guiTop + 24);
-			itemRender.renderItemOverlayIntoGUI(this.fontRendererObj, this.mc.getTextureManager(), output, guiLeft + 92, guiTop + 24);
-			
-			itemRender.zLevel = 0.0F;
-			GL11.glDisable(GL11.GL_LIGHTING);
-			
-			if (this.func_146978_c(8, 24, 16, 16, mouseX, mouseY))
-			{
-				this.renderToolTip(input1, mouseX, mouseY);
-			}
-			else if (input2 != null && this.func_146978_c(34, 24, 16, 16, mouseX, mouseY))
-			{
-				this.renderToolTip(input2, mouseX, mouseY);
-			}
-			else if (this.func_146978_c(92, 24, 16, 16, mouseX, mouseY))
-			{
-				this.renderToolTip(output, mouseX, mouseY);
-			}
-			
-			GL11.glPopMatrix();
-			GL11.glEnable(GL11.GL_LIGHTING);
-			GL11.glEnable(GL11.GL_DEPTH_TEST);
-			RenderHelper.enableStandardItemLighting();
 		}
 	}
 	

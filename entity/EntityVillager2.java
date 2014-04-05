@@ -1,14 +1,14 @@
 package clashsoft.mods.avi.entity;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import clashsoft.cslib.reflect.CSReflection;
 import clashsoft.mods.avi.AdvancedVillagerInteraction;
 import clashsoft.mods.avi.api.IQuestProvider;
+import clashsoft.mods.avi.network.PacketQuestList;
 import clashsoft.mods.avi.network.PacketRecipeList;
 import clashsoft.mods.avi.quest.Quest;
+import clashsoft.mods.avi.quest.QuestList;
 
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,13 +16,12 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.village.MerchantRecipeList;
 import net.minecraft.world.World;
 
 public class EntityVillager2 extends EntityVillager implements IQuestProvider
 {
-	public List<Quest>	quests	= new ArrayList();
+	public QuestList	quests = new QuestList(this);
 	public Random		questRandom;
 	
 	public EntityVillager2(World world)
@@ -34,6 +33,7 @@ public class EntityVillager2 extends EntityVillager implements IQuestProvider
 	{
 		super(world, profession);
 		this.questRandom = new Random(world.getSeed() ^ 29285198294861982L);
+		this.shuffleQuests();
 	}
 	
 	@Override
@@ -42,56 +42,48 @@ public class EntityVillager2 extends EntityVillager implements IQuestProvider
 		CSReflection.setValue(EntityVillager.class, this, recipeList, 5);
 	}
 	
+	public void setQuests(QuestList questList)
+	{
+		questList.setProvider(this);
+		this.quests = questList;
+	}
+	
 	@Override
 	public void shuffleQuests()
 	{
-		this.quests.clear();
-		for (int i = 0; i < 3; i++)
+		this.quests = new QuestList(this);
+		for (int i = 0; i< 3; i++)
 		{
-			this.quests.add(Quest.random(this.questRandom));
+			Quest quest = Quest.random(this, this.questRandom);
+			this.quests.add(quest);
+			System.out.println(quest.getName());
 		}
 	}
 	
 	@Override
-	public int getQuests()
+	public float getRewardMultiplier()
 	{
-		return this.quests.size();
+		return 1F;
 	}
 	
 	@Override
-	public Quest getQuest(int index)
+	public QuestList getQuests()
 	{
-		return this.quests.get(index);
+		return this.quests;
 	}
 	
 	@Override
 	public void writeToNBT(NBTTagCompound nbt)
 	{
 		super.writeToNBT(nbt);
-		
-		NBTTagList list = new NBTTagList();
-		for (Quest quest : quests)
-		{
-			NBTTagCompound questNBT = new NBTTagCompound();
-			quest.writeToNBT(questNBT);
-			list.appendTag(questNBT);
-		}
-		
-		nbt.setTag("Quests", list);
+		this.quests.writeToNBT(nbt);
 	}
 	
 	@Override
 	public void readFromNBT(NBTTagCompound nbt)
 	{
 		super.readFromNBT(nbt);
-		
-		NBTTagList list = nbt.getTagList("Quests", 11);
-		for (int i = 0; i < list.tagCount(); i++)
-		{
-			NBTTagCompound questNBT = list.getCompoundTagAt(i);
-			Quest quest = Quest.getQuestFromNBT(questNBT);
-			this.quests.add(quest);
-		}
+		this.setQuests(QuestList.readFromNBT(nbt));
 	}
 	
 	@Override
@@ -105,7 +97,7 @@ public class EntityVillager2 extends EntityVillager implements IQuestProvider
 			if (!this.worldObj.isRemote)
 			{
 				this.setCustomer(player);
-				this.displayGUIMerchant((EntityPlayerMP) player);
+				this.displayGUI((EntityPlayerMP) player);
 			}
 			
 			return true;
@@ -116,18 +108,24 @@ public class EntityVillager2 extends EntityVillager implements IQuestProvider
 		}
 	}
 	
-	public void displayGUIMerchant(EntityPlayerMP player)
+	public void displayGUI(EntityPlayerMP player)
 	{
 		this.syncRecipeList(player);
+		this.syncQuests(player);
 		player.openGui(AdvancedVillagerInteraction.instance, 0, this.worldObj, this.getEntityId(), 0, 0);
 	}
 	
 	public void syncRecipeList(EntityPlayerMP player)
 	{
-		MerchantRecipeList merchantrecipelist = this.getRecipes(player);
-		if (merchantrecipelist != null)
+		MerchantRecipeList recipeList = this.getRecipes(player);
+		if (recipeList != null)
 		{
-			AdvancedVillagerInteraction.netHandler.sendTo(new PacketRecipeList(this, merchantrecipelist), player);
+			AdvancedVillagerInteraction.netHandler.sendTo(new PacketRecipeList(this, recipeList), player);
 		}
+	}
+	
+	public void syncQuests(EntityPlayerMP player)
+	{
+		AdvancedVillagerInteraction.netHandler.sendTo(new PacketQuestList(this, this.quests), player);
 	}
 }
