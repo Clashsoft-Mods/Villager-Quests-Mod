@@ -1,18 +1,17 @@
 package clashsoft.mods.avi.common;
 
-import clashsoft.mods.avi.entity.EntityAdvancedVillager;
+import clashsoft.mods.avi.entity.EntityVillager2;
 import clashsoft.mods.avi.inventory.ContainerAdvancedVillager;
 import cpw.mods.fml.common.network.IGuiHandler;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.world.World;
 
 public class AVICommonProxy implements IGuiHandler
 {
-	public EntityAdvancedVillager getVillager(World world, int entityID)
+	public EntityVillager2 getVillager(World world, int entityID)
 	{
-		return (EntityAdvancedVillager) world.getEntityByID(entityID);
+		return (EntityVillager2) world.getEntityByID(entityID);
 	}
 	
 	@Override
@@ -29,9 +28,5 @@ public class AVICommonProxy implements IGuiHandler
 	public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z)
 	{
 		return null;
-	}
-	
-	public void onTradeListUpdate(EntityPlayer player, Packet250CustomPayload packet)
-	{
 	}
 }

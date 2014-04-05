@@ -6,9 +6,9 @@ public class QuestCollect extends Quest
 {
 	public ItemStack stack;
 	
-	public QuestCollect(String name, String description, int reward, ItemStack stack)
+	public QuestCollect(String name, int reward, ItemStack stack)
 	{
-		super(name, description, reward);
+		super(name, reward);
 		this.stack = stack;
 	}
 	

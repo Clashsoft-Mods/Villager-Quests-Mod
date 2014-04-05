@@ -2,7 +2,7 @@ package clashsoft.mods.avi.quest;
 
 import java.util.*;
 
-import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.oredict.OreDictionary;
@@ -12,17 +12,15 @@ public class Quest
 	public static Map<String, Quest> questMap = new HashMap();
 	public static List<Quest> questList = new ArrayList();
 	
-	public static Quest collectWood = new QuestCollect("Collect Wood", "Collect 16 wood logs of any type", 1, new ItemStack(Block.wood, 16, OreDictionary.WILDCARD_VALUE));
-	public static Quest collectStone = new QuestCollect("Collect Stone", "Collect 64 smooth stones", 2, new ItemStack(Block.stone));
+	public static Quest collectWood = new QuestCollect("collect.wood", 1, new ItemStack(Blocks.log, 16, OreDictionary.WILDCARD_VALUE));
+	public static Quest collectStone = new QuestCollect("collect.stone", 2, new ItemStack(Blocks.stone));
 	
 	public String name;
-	public String description;
 	public int reward;
 	
-	public Quest(String name, String description, int reward)
+	public Quest(String name, int reward)
 	{
 		this.name = name;
-		this.description = description;
 		this.reward = reward;
 		
 		questMap.put(name, this);
@@ -54,7 +52,6 @@ public class Quest
 	public static void copy(Quest src, Quest dest)
 	{
 		dest.name = src.name;
-		dest.description = src.description;
 		dest.reward = src.reward;
 	}
 }

@@ -1,43 +1,48 @@
 package clashsoft.mods.avi.entity;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import clashsoft.cslib.reflect.CSReflection;
 import clashsoft.mods.avi.AdvancedVillagerInteraction;
 import clashsoft.mods.avi.api.IQuestProvider;
+import clashsoft.mods.avi.network.PacketRecipeList;
 import clashsoft.mods.avi.quest.Quest;
 
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.Item;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.village.MerchantRecipeList;
 import net.minecraft.world.World;
 
-public class EntityAdvancedVillager extends EntityVillager implements IQuestProvider
+public class EntityVillager2 extends EntityVillager implements IQuestProvider
 {
 	public List<Quest>	quests	= new ArrayList();
 	public Random		questRandom;
 	
-	public EntityAdvancedVillager(World world)
+	public EntityVillager2(World world)
 	{
 		this(world, 0);
 	}
 	
-	public EntityAdvancedVillager(World world, int profession)
+	public EntityVillager2(World world, int profession)
 	{
 		super(world, profession);
 		this.questRandom = new Random(world.getSeed() ^ 29285198294861982L);
 	}
 	
+	@Override
+	public void setRecipes(MerchantRecipeList recipeList)
+	{
+		CSReflection.setValue(EntityVillager.class, this, recipeList, 5);
+	}
+	
+	@Override
 	public void shuffleQuests()
 	{
 		this.quests.clear();
@@ -80,37 +85,27 @@ public class EntityAdvancedVillager extends EntityVillager implements IQuestProv
 	{
 		super.readFromNBT(nbt);
 		
-		NBTTagList list = nbt.getTagList("Quests");
+		NBTTagList list = nbt.getTagList("Quests", 11);
 		for (int i = 0; i < list.tagCount(); i++)
 		{
-			NBTTagCompound questNBT = (NBTTagCompound) list.tagAt(i);
+			NBTTagCompound questNBT = list.getCompoundTagAt(i);
 			Quest quest = Quest.getQuestFromNBT(questNBT);
 			this.quests.add(quest);
 		}
 	}
 	
-	/**
-	 * Called when a player interacts with a mob. e.g. gets milk from a cow, gets into the saddle on a pig.
-	 */
+	@Override
 	public boolean interact(EntityPlayer player)
 	{
 		ItemStack itemstack = player.inventory.getCurrentItem();
-		boolean flag = itemstack != null && itemstack.itemID == Item.monsterPlacer.itemID;
+		boolean flag = itemstack != null && itemstack.getItem() == Items.spawn_egg;
 		
 		if (!flag && this.isEntityAlive() && !this.isTrading() && !this.isChild() && !player.isSneaking())
 		{
 			if (!this.worldObj.isRemote)
 			{
 				this.setCustomer(player);
-				
-				if (player instanceof EntityPlayerMP)
-				{
-					displayGUIMerchant((EntityPlayerMP) player);
-				}
-				else
-				{
-					player.displayGUIMerchant(this, this.getCustomNameTag());
-				}
+				this.displayGUIMerchant((EntityPlayerMP) player);
 			}
 			
 			return true;
@@ -123,22 +118,16 @@ public class EntityAdvancedVillager extends EntityVillager implements IQuestProv
 	
 	public void displayGUIMerchant(EntityPlayerMP player)
 	{
-		player.openGui(AdvancedVillagerInteraction.instance, 0, this.worldObj, this.entityId, 0, 0);
+		this.syncRecipeList(player);
+		player.openGui(AdvancedVillagerInteraction.instance, 0, this.worldObj, this.getEntityId(), 0, 0);
+	}
+	
+	public void syncRecipeList(EntityPlayerMP player)
+	{
 		MerchantRecipeList merchantrecipelist = this.getRecipes(player);
 		if (merchantrecipelist != null)
 		{
-			try
-			{
-				ByteArrayOutputStream bytearrayoutputstream = new ByteArrayOutputStream();
-				DataOutputStream dataoutputstream = new DataOutputStream(bytearrayoutputstream);
-				dataoutputstream.writeInt(player.currentWindowId);
-				merchantrecipelist.writeRecipiesToStream(dataoutputstream);
-				player.playerNetServerHandler.sendPacketToPlayer(new Packet250CustomPayload("AVI", bytearrayoutputstream.toByteArray()));
-			}
-			catch (IOException ioexception)
-			{
-				ioexception.printStackTrace();
-			}
+			AdvancedVillagerInteraction.netHandler.sendTo(new PacketRecipeList(this, merchantrecipelist), player);
 		}
 	}
 }
