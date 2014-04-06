@@ -1,5 +1,6 @@
 package clashsoft.mods.avi;
 
+import clashsoft.cslib.minecraft.ClashsoftMod;
 import clashsoft.cslib.minecraft.update.CSUpdate;
 import clashsoft.mods.avi.common.AVICommonProxy;
 import clashsoft.mods.avi.common.AVIEventHandler;
@@ -16,13 +17,13 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 
 import net.minecraft.entity.EntityList;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.Configuration;
 
 @Mod(modid = AdvancedVillagerInteraction.MODID, name = AdvancedVillagerInteraction.NAME, version = AdvancedVillagerInteraction.VERSION)
-public class AdvancedVillagerInteraction
+public class AdvancedVillagerInteraction extends ClashsoftMod<AVINetHandler>
 {
 	public static final String					MODID			= "advancedvillagerinteraction";
 	public static final String					NAME			= "Advanced Villager Interaction";
+	public static final String					ACRONYM			= "avi";
 	public static final String					VERSION			= CSUpdate.CURRENT_VERSION + "-1.0.0";
 	
 	@Instance(MODID)
@@ -31,23 +32,27 @@ public class AdvancedVillagerInteraction
 	@SidedProxy(clientSide = "clashsoft.mods.avi.client.AVIClientProxy", serverSide = "clashsoft.mods.avi.common.AVICommonProxy")
 	public static AVICommonProxy				proxy;
 	
-	public static AVINetHandler					netHandler		= new AVINetHandler();
 	public static AVIEventHandler				eventHandler	= new AVIEventHandler();
 	
-	@EventHandler
-	public void preLoad(FMLPreInitializationEvent event)
+	public AdvancedVillagerInteraction()
 	{
-		Configuration config = new Configuration(event.getSuggestedConfigurationFile());
-		
-		// Config stuff
-		
-		config.save();
+		super(MODID, NAME, ACRONYM, VERSION);
+		this.netHandlerClass = AVINetHandler.class;
+		this.url = "https://github.com/Clashsoft/Advanced-Villager-Interaction/wiki/";
 	}
 	
+	@Override
+	@EventHandler
+	public void preInit(FMLPreInitializationEvent event)
+	{
+		super.preInit(event);
+	}
+	
+	@Override
 	@EventHandler
 	public void init(FMLInitializationEvent event)
 	{
-		netHandler.init();
+		super.init(event);
 		
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, proxy);
 		MinecraftForge.EVENT_BUS.register(eventHandler);
@@ -57,9 +62,10 @@ public class AdvancedVillagerInteraction
 		EntityList.addMapping(EntityVillager2.class, "Villager", 120);
 	}
 	
+	@Override
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event)
 	{
-		netHandler.postInit();
+		super.postInit(event);
 	}
 }
