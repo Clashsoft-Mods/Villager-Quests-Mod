@@ -10,7 +10,7 @@ import net.minecraft.network.PacketBuffer;
 
 public class PacketSetRecipe extends CSPacket
 {
-	public int recipe;
+	public int	recipe;
 	
 	public PacketSetRecipe()
 	{
@@ -42,10 +42,10 @@ public class PacketSetRecipe extends CSPacket
 	public void handleServer(EntityPlayerMP player)
 	{
 		Container container = player.openContainer;
-
-        if (container instanceof ContainerAdvancedVillager)
-        {
-          ((ContainerAdvancedVillager)container).setCurrentRecipeIndex(this.recipe);
-        }
+		
+		if (container instanceof ContainerAdvancedVillager)
+		{
+			((ContainerAdvancedVillager) container).setCurrentRecipeIndex(this.recipe);
+		}
 	}
 }

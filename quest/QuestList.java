@@ -68,7 +68,7 @@ public class QuestList extends ArrayList<Quest>
 			q.readFromBuffer(buffer);
 		}
 	}
-
+	
 	public static QuestList readFromNBT(NBTTagCompound nbt)
 	{
 		QuestList quests = new QuestList(null);

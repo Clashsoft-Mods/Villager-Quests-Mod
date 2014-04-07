@@ -10,8 +10,8 @@ import net.minecraft.village.MerchantRecipeList;
 
 public class PacketRecipeList extends CSPacket
 {
-	public int villager;
-	public MerchantRecipeList recipeList;
+	public int					villager;
+	public MerchantRecipeList	recipeList;
 	
 	public PacketRecipeList()
 	{

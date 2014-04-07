@@ -41,6 +41,6 @@ public class MerchantButton extends GuiButton
 			j += this.height;
 		}
 		
-		drawTexturedModalRect(this.xPosition, this.yPosition, k, j, this.width, this.height);
+		this.drawTexturedModalRect(this.xPosition, this.yPosition, k, j, this.width, this.height);
 	}
 }

@@ -7,6 +7,8 @@ import net.minecraft.entity.IMerchant;
 public interface IQuestProvider extends IMerchant
 {
 	public void shuffleQuests();
+	
 	public QuestList getQuests();
+	
 	public float getRewardMultiplier();
 }

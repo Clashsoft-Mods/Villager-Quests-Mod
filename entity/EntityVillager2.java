@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 
 public class EntityVillager2 extends EntityVillager implements IQuestProvider
 {
-	public QuestList	quests = new QuestList(this);
+	public QuestList	quests	= new QuestList(this);
 	public Random		questRandom;
 	
 	public EntityVillager2(World world)
@@ -32,7 +32,7 @@ public class EntityVillager2 extends EntityVillager implements IQuestProvider
 	public EntityVillager2(World world, int profession)
 	{
 		super(world, profession);
-		this.questRandom = new Random(world.getSeed() ^ 29285198294861982L);
+		this.questRandom = new Random(world.getSeed() ^ this.rand.nextLong());
 		this.shuffleQuests();
 	}
 	
@@ -52,11 +52,10 @@ public class EntityVillager2 extends EntityVillager implements IQuestProvider
 	public void shuffleQuests()
 	{
 		this.quests = new QuestList(this);
-		for (int i = 0; i< 3; i++)
+		for (int i = 0; i < 3; i++)
 		{
 			Quest quest = Quest.random(this, this.questRandom);
 			this.quests.add(quest);
-			System.out.println(quest.getName());
 		}
 	}
 	
@@ -120,12 +119,12 @@ public class EntityVillager2 extends EntityVillager implements IQuestProvider
 		MerchantRecipeList recipeList = this.getRecipes(player);
 		if (recipeList != null)
 		{
-			AdvancedVillagerInteraction.netHandler.sendTo(new PacketRecipeList(this, recipeList), player);
+			AdvancedVillagerInteraction.instance.netHandler.sendTo(new PacketRecipeList(this, recipeList), player);
 		}
 	}
 	
 	public void syncQuests(EntityPlayerMP player)
 	{
-		AdvancedVillagerInteraction.netHandler.sendTo(new PacketQuestList(this, this.quests), player);
+		AdvancedVillagerInteraction.instance.netHandler.sendTo(new PacketQuestList(this, this.quests), player);
 	}
 }

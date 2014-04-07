@@ -9,7 +9,7 @@ import net.minecraft.network.PacketBuffer;
 
 public class PacketShuffleQuests extends CSPacket
 {
-	public int villager;
+	public int	villager;
 	
 	public PacketShuffleQuests()
 	{

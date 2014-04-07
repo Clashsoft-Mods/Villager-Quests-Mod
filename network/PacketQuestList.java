@@ -10,8 +10,8 @@ import net.minecraft.network.PacketBuffer;
 
 public class PacketQuestList extends CSPacket
 {
-	public int villager;
-	public QuestList questList;
+	public int			villager;
+	public QuestList	questList;
 	
 	public PacketQuestList()
 	{
@@ -47,6 +47,5 @@ public class PacketQuestList extends CSPacket
 	@Override
 	public void handleServer(EntityPlayerMP player)
 	{
-		System.out.println();
 	}
 }

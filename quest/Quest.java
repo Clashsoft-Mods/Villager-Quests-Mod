@@ -8,8 +8,8 @@ import net.minecraft.network.PacketBuffer;
 
 public class Quest
 {
-	private IQuestProvider provider;
-	private QuestType type;
+	private IQuestProvider	provider;
+	private QuestType		type;
 	
 	public Quest()
 	{
@@ -35,7 +35,7 @@ public class Quest
 	{
 		return this.type.getName();
 	}
-
+	
 	public int getReward()
 	{
 		return (int) (this.type.getReward() * this.provider.getRewardMultiplier());

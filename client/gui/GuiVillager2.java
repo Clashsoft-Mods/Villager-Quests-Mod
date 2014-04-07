@@ -25,24 +25,27 @@ import net.minecraft.world.World;
 
 public class GuiVillager2 extends GuiContainer
 {
-	public boolean					questMode		= false;
+	public boolean						questMode		= false;
 	
-	public static ResourceLocation	questBackground	= new ResourceLocation("avi", "textures/gui/container/villager_quests.png");
-	public static ResourceLocation	tradeBackground	= new ResourceLocation("avi", "textures/gui/container/villager_trading.png");
+	public static ResourceLocation		questBackground	= new ResourceLocation("avi", "textures/gui/container/villager_quests.png");
+	public static ResourceLocation		tradeBackground	= new ResourceLocation("avi", "textures/gui/container/villager_trading.png");
 	
-	public EntityVillager2			theVillager;
-	public int						currentRecipeIndex;
-	public String					name;
+	public EntityVillager2				theVillager;
+	public int							currentRecipeIndex;
+	public String						name;
 	
-	public MerchantButton			nextRecipeButton;
-	public MerchantButton			prevRecipeButton;
-	public GuiButton				shuffleQuestsButton;
-	public GuiButton				questReward;
-	public GuiButtonTradeMode		switchModeButton;
+	public ContainerAdvancedVillager	villagerContainer;
+	
+	public MerchantButton				nextRecipeButton;
+	public MerchantButton				prevRecipeButton;
+	public GuiButton					shuffleQuestsButton;
+	public GuiButton					questReward;
+	public GuiButtonTradeMode			switchModeButton;
 	
 	public GuiVillager2(InventoryPlayer inventory, EntityVillager2 merchant, World world, String name)
 	{
 		super(new ContainerAdvancedVillager(inventory, merchant, world));
+		this.villagerContainer = (ContainerAdvancedVillager) this.inventorySlots;
 		this.theVillager = merchant;
 		this.name = name != null && name.length() >= 1 ? name : StatCollector.translateToLocal("entity.Villager.name");
 	}
@@ -118,13 +121,13 @@ public class GuiVillager2 extends GuiContainer
 		}
 		else if (button == this.shuffleQuestsButton)
 		{
-			AdvancedVillagerInteraction.netHandler.sendToServer(new PacketShuffleQuests(this.theVillager));
+			AdvancedVillagerInteraction.instance.netHandler.sendToServer(new PacketShuffleQuests(this.theVillager));
 		}
 		
 		if (flag)
 		{
-			((ContainerAdvancedVillager) this.inventorySlots).setCurrentRecipeIndex(this.currentRecipeIndex);
-			AdvancedVillagerInteraction.netHandler.sendToServer(new PacketSetRecipe(this.currentRecipeIndex));
+			this.villagerContainer.setCurrentRecipeIndex(this.currentRecipeIndex);
+			AdvancedVillagerInteraction.instance.netHandler.sendToServer(new PacketSetRecipe(this.currentRecipeIndex));
 		}
 	}
 	
@@ -146,7 +149,7 @@ public class GuiVillager2 extends GuiContainer
 				
 				this.mc.getTextureManager().bindTexture(questBackground);
 				int icon = QuestType.rewardIcon(quest.getReward());
-				this.drawTexturedModalRect(k, l, 109 + icon * 12, 166, 12, 12);
+				this.drawTexturedModalRect(k + 92, l, 108 + icon * 12, 166, 12, 12);
 				l += 19;
 			}
 		}
@@ -199,15 +202,15 @@ public class GuiVillager2 extends GuiContainer
 				GL11.glEnable(GL11.GL_LIGHTING);
 				itemRender.zLevel = 100.0F;
 				
-				itemRender.renderItemAndEffectIntoGUI(this.fontRendererObj, this.mc.getTextureManager(), input1, guiLeft + 8, guiTop + 24);
-				itemRender.renderItemOverlayIntoGUI(this.fontRendererObj, this.mc.getTextureManager(), input1, guiLeft + 8, guiTop + 24);
+				itemRender.renderItemAndEffectIntoGUI(this.fontRendererObj, this.mc.getTextureManager(), input1, this.guiLeft + 8, this.guiTop + 24);
+				itemRender.renderItemOverlayIntoGUI(this.fontRendererObj, this.mc.getTextureManager(), input1, this.guiLeft + 8, this.guiTop + 24);
 				if (input2 != null)
 				{
-					itemRender.renderItemAndEffectIntoGUI(this.fontRendererObj, this.mc.getTextureManager(), input2, guiLeft + 34, guiTop + 24);
-					itemRender.renderItemOverlayIntoGUI(this.fontRendererObj, this.mc.getTextureManager(), input2, guiLeft + 34, guiTop + 24);
+					itemRender.renderItemAndEffectIntoGUI(this.fontRendererObj, this.mc.getTextureManager(), input2, this.guiLeft + 34, this.guiTop + 24);
+					itemRender.renderItemOverlayIntoGUI(this.fontRendererObj, this.mc.getTextureManager(), input2, this.guiLeft + 34, this.guiTop + 24);
 				}
-				itemRender.renderItemAndEffectIntoGUI(this.fontRendererObj, this.mc.getTextureManager(), output, guiLeft + 92, guiTop + 24);
-				itemRender.renderItemOverlayIntoGUI(this.fontRendererObj, this.mc.getTextureManager(), output, guiLeft + 92, guiTop + 24);
+				itemRender.renderItemAndEffectIntoGUI(this.fontRendererObj, this.mc.getTextureManager(), output, this.guiLeft + 92, this.guiTop + 24);
+				itemRender.renderItemOverlayIntoGUI(this.fontRendererObj, this.mc.getTextureManager(), output, this.guiLeft + 92, this.guiTop + 24);
 				
 				itemRender.zLevel = 0.0F;
 				GL11.glDisable(GL11.GL_LIGHTING);
