@@ -65,7 +65,7 @@ public class QuestList extends ArrayList<Quest>
 		buffer.writeShort(this.size());
 		for (Quest q : this)
 		{
-			q.readFromBuffer(buffer);
+			q.writeToBuffer(buffer);
 		}
 	}
 	

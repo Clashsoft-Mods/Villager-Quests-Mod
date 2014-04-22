@@ -9,23 +9,31 @@ import net.minecraft.inventory.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
-public class ContainerAdvancedVillager extends Container
+public class ContainerVillager2 extends Container
 {
-	private IMerchant			theMerchant;
-	private InventoryMerchant	merchantInventory;
+	public IMerchant			theMerchant;
+	public InventoryMerchant	merchantInventory;
+	
+	private Slot inputSlot1;
+	private Slot inputSlot2;
+	private Slot outputSlot;
 	
 	private final World			theWorld;
 	
-	public ContainerAdvancedVillager(InventoryPlayer inventory, IQuestProvider merchant, World world)
+	public ContainerVillager2(InventoryPlayer inventory, IQuestProvider merchant, World world)
 	{
 		this.theMerchant = merchant;
 		this.theWorld = world;
 		this.merchantInventory = new InventoryMerchant(inventory.player, merchant);
-		this.addSlotToContainer(new Slot(this.merchantInventory, 0, 8, 53));
-		this.addSlotToContainer(new Slot(this.merchantInventory, 1, 34, 53));
-		this.addSlotToContainer(new SlotMerchantResult(inventory.player, merchant, this.merchantInventory, 2, 92, 53));
-		int i;
 		
+		this.inputSlot1 = new Slot(this.merchantInventory, 0, 8, 53);
+		this.inputSlot2  = new Slot(this.merchantInventory, 1, 34, 53);
+		this.outputSlot = new SlotMerchantResult(inventory.player, merchant, this.merchantInventory, 2, 92, 53);
+		this.addSlotToContainer(this.inputSlot1);
+		this.addSlotToContainer(this.inputSlot2);
+		this.addSlotToContainer(this.outputSlot);
+		
+		int i;
 		for (i = 0; i < 3; ++i)
 		{
 			for (int j = 0; j < 9; ++j)
@@ -37,6 +45,22 @@ public class ContainerAdvancedVillager extends Container
 		for (i = 0; i < 9; ++i)
 		{
 			this.addSlotToContainer(new Slot(inventory, i, 8 + i * 18, 142));
+		}
+	}
+	
+	public void setQuestMode(boolean questMode)
+	{
+		if (questMode)
+		{
+			this.inputSlot1.yDisplayPosition = -2000;
+			this.inputSlot2.yDisplayPosition = -2000;
+			this.outputSlot.yDisplayPosition = -2000;
+		}
+		else
+		{
+			this.inputSlot1.yDisplayPosition = 53;
+			this.inputSlot2.yDisplayPosition = 53;
+			this.outputSlot.yDisplayPosition = 53;
 		}
 	}
 	

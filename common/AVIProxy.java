@@ -2,7 +2,7 @@ package clashsoft.mods.avi.common;
 
 import clashsoft.cslib.minecraft.common.BaseProxy;
 import clashsoft.mods.avi.entity.EntityVillager2;
-import clashsoft.mods.avi.inventory.ContainerAdvancedVillager;
+import clashsoft.mods.avi.inventory.ContainerVillager2;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
@@ -19,7 +19,7 @@ public class AVIProxy extends BaseProxy
 	{
 		if (ID == 0)
 		{
-			return new ContainerAdvancedVillager(player.inventory, this.getVillager(world, x), world);
+			return new ContainerVillager2(player.inventory, this.getVillager(world, x), world);
 		}
 		return null;
 	}

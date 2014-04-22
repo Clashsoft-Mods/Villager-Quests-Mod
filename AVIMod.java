@@ -15,8 +15,8 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
-@Mod(modid = AdvancedVillagerInteraction.MODID, name = AdvancedVillagerInteraction.NAME, version = AdvancedVillagerInteraction.VERSION)
-public class AdvancedVillagerInteraction extends ClashsoftMod<AVINetHandler>
+@Mod(modid = AVIMod.MODID, name = AVIMod.NAME, version = AVIMod.VERSION)
+public class AVIMod extends ClashsoftMod<AVINetHandler>
 {
 	public static final String					MODID	= "advancedvillagerinteraction";
 	public static final String					NAME	= "Advanced Villager Interaction";
@@ -24,12 +24,12 @@ public class AdvancedVillagerInteraction extends ClashsoftMod<AVINetHandler>
 	public static final String					VERSION	= CSUpdate.CURRENT_VERSION + "-1.0.0";
 	
 	@Instance(MODID)
-	public static AdvancedVillagerInteraction	instance;
+	public static AVIMod	instance;
 	
 	@SidedProxy(clientSide = "clashsoft.mods.avi.client.AVIClientProxy", serverSide = "clashsoft.mods.avi.common.AVIProxy")
 	public static AVIProxy						proxy;
 	
-	public AdvancedVillagerInteraction()
+	public AVIMod()
 	{
 		super(proxy, MODID, NAME, ACRONYM, VERSION);
 		this.netHandlerClass = AVINetHandler.class;

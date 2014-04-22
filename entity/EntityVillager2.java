@@ -3,7 +3,7 @@ package clashsoft.mods.avi.entity;
 import java.util.Random;
 
 import clashsoft.cslib.reflect.CSReflection;
-import clashsoft.mods.avi.AdvancedVillagerInteraction;
+import clashsoft.mods.avi.AVIMod;
 import clashsoft.mods.avi.api.IQuestProvider;
 import clashsoft.mods.avi.network.PacketQuestList;
 import clashsoft.mods.avi.network.PacketRecipeList;
@@ -60,6 +60,36 @@ public class EntityVillager2 extends EntityVillager implements IQuestProvider
 	}
 	
 	@Override
+	public void refreshQuests(EntityPlayerMP player)
+	{
+		for (Quest quest : this.quests)
+		{
+			quest.checkCompleted(player);
+		}
+	}
+	
+	@Override
+	public void rewardQuests(EntityPlayerMP player)
+	{
+		int reward = 0;
+		for (Quest quest : this.quests)
+		{
+			quest.checkCompleted(player);
+			quest.reward(player);
+		}
+	}
+	
+	public void syncRecipeList(EntityPlayerMP player)
+	{
+		AVIMod.instance.netHandler.sendTo(new PacketRecipeList(this, this.getRecipes(player)), player);
+	}
+	
+	public void syncQuests(EntityPlayerMP player)
+	{
+		AVIMod.instance.netHandler.sendTo(new PacketQuestList(this, this.quests), player);
+	}
+	
+	@Override
 	public float getRewardMultiplier()
 	{
 		return 1F;
@@ -89,14 +119,15 @@ public class EntityVillager2 extends EntityVillager implements IQuestProvider
 	public boolean interact(EntityPlayer player)
 	{
 		ItemStack itemstack = player.inventory.getCurrentItem();
-		boolean flag = itemstack != null && itemstack.getItem() == Items.spawn_egg;
 		
-		if (!flag && this.isEntityAlive() && !this.isTrading() && !this.isChild() && !player.isSneaking())
+		if ((itemstack == null || itemstack.getItem() != Items.spawn_egg) && this.isEntityAlive() && !this.isTrading() && !this.isChild() && !player.isSneaking())
 		{
 			if (!this.worldObj.isRemote)
 			{
 				this.setCustomer(player);
-				this.displayGUI((EntityPlayerMP) player);
+				this.syncRecipeList((EntityPlayerMP) player);
+				this.syncQuests((EntityPlayerMP) player);
+				player.openGui(AVIMod.instance, 0, this.worldObj, this.getEntityId(), 0, 0);
 			}
 			
 			return true;
@@ -105,26 +136,5 @@ public class EntityVillager2 extends EntityVillager implements IQuestProvider
 		{
 			return false;
 		}
-	}
-	
-	public void displayGUI(EntityPlayerMP player)
-	{
-		this.syncRecipeList(player);
-		this.syncQuests(player);
-		player.openGui(AdvancedVillagerInteraction.instance, 0, this.worldObj, this.getEntityId(), 0, 0);
-	}
-	
-	public void syncRecipeList(EntityPlayerMP player)
-	{
-		MerchantRecipeList recipeList = this.getRecipes(player);
-		if (recipeList != null)
-		{
-			AdvancedVillagerInteraction.instance.netHandler.sendTo(new PacketRecipeList(this, recipeList), player);
-		}
-	}
-	
-	public void syncQuests(EntityPlayerMP player)
-	{
-		AdvancedVillagerInteraction.instance.netHandler.sendTo(new PacketQuestList(this, this.quests), player);
 	}
 }

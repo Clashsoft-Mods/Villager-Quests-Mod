@@ -1,36 +1,35 @@
 package clashsoft.mods.avi.network;
 
 import clashsoft.cslib.minecraft.network.CSPacket;
-import clashsoft.mods.avi.inventory.ContainerVillager2;
+import clashsoft.mods.avi.entity.EntityVillager2;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.Container;
 import net.minecraft.network.PacketBuffer;
 
-public class PacketSetRecipe extends CSPacket
+public class PacketRefreshQuests extends CSPacket
 {
-	public int	recipe;
+	public int villager;
 	
-	public PacketSetRecipe()
+	public PacketRefreshQuests()
 	{
 	}
 	
-	public PacketSetRecipe(int recipe)
+	public PacketRefreshQuests(EntityVillager2 villager)
 	{
-		this.recipe = recipe;
+		this.villager = villager.getEntityId();
 	}
 	
 	@Override
 	public void write(PacketBuffer buf)
 	{
-		buf.writeInt(this.recipe);
+		buf.writeInt(this.villager);
 	}
 	
 	@Override
 	public void read(PacketBuffer buf)
 	{
-		this.recipe = buf.readInt();
+		this.villager = buf.readInt();
 	}
 	
 	@Override
@@ -41,11 +40,8 @@ public class PacketSetRecipe extends CSPacket
 	@Override
 	public void handleServer(EntityPlayerMP player)
 	{
-		Container container = player.openContainer;
-		
-		if (container instanceof ContainerVillager2)
-		{
-			((ContainerVillager2) container).setCurrentRecipeIndex(this.recipe);
-		}
+		EntityVillager2 villager = (EntityVillager2) player.worldObj.getEntityByID(this.villager);
+		villager.refreshQuests(player);
+		villager.syncQuests(player);
 	}
 }

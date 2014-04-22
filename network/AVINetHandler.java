@@ -7,9 +7,11 @@ public class AVINetHandler extends CSNetHandler
 	public AVINetHandler()
 	{
 		super("AVI");
-		this.registerPacket(PacketSetRecipe.class);
-		this.registerPacket(PacketShuffleQuests.class);
 		this.registerPacket(PacketRecipeList.class);
+		this.registerPacket(PacketSetRecipe.class);
 		this.registerPacket(PacketQuestList.class);
+		this.registerPacket(PacketShuffleQuests.class);
+		this.registerPacket(PacketRefreshQuests.class);
+		this.registerPacket(PacketRewardQuests.class);
 	}
 }

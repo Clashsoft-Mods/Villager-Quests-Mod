@@ -42,6 +42,7 @@ public class PacketShuffleQuests extends CSPacket
 	{
 		EntityVillager2 villager = (EntityVillager2) player.worldObj.getEntityByID(this.villager);
 		villager.shuffleQuests();
+		villager.refreshQuests(player);
 		villager.syncQuests(player);
 	}
 }

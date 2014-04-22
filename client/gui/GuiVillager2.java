@@ -1,16 +1,23 @@
 package clashsoft.mods.avi.client.gui;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
-import clashsoft.mods.avi.AdvancedVillagerInteraction;
+import clashsoft.cslib.minecraft.lang.I18n;
+import clashsoft.mods.avi.AVIMod;
 import clashsoft.mods.avi.api.IQuestProvider;
 import clashsoft.mods.avi.entity.EntityVillager2;
-import clashsoft.mods.avi.inventory.ContainerAdvancedVillager;
+import clashsoft.mods.avi.inventory.ContainerVillager2;
+import clashsoft.mods.avi.network.PacketRefreshQuests;
+import clashsoft.mods.avi.network.PacketRewardQuests;
 import clashsoft.mods.avi.network.PacketSetRecipe;
 import clashsoft.mods.avi.network.PacketShuffleQuests;
 import clashsoft.mods.avi.quest.Quest;
-import clashsoft.mods.avi.quest.QuestType;
+import clashsoft.mods.avi.quest.type.QuestType;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -25,29 +32,29 @@ import net.minecraft.world.World;
 
 public class GuiVillager2 extends GuiContainer
 {
-	public boolean						questMode		= false;
+	public boolean					questMode		= false;
 	
-	public static ResourceLocation		questBackground	= new ResourceLocation("avi", "textures/gui/container/villager_quests.png");
-	public static ResourceLocation		tradeBackground	= new ResourceLocation("avi", "textures/gui/container/villager_trading.png");
+	public static ResourceLocation	questBackground	= new ResourceLocation("avi", "textures/gui/container/villager_quests.png");
+	public static ResourceLocation	tradeBackground	= new ResourceLocation("avi", "textures/gui/container/villager_trading.png");
 	
-	public EntityVillager2				theVillager;
-	public int							currentRecipeIndex;
-	public String						name;
+	public EntityVillager2			theVillager;
+	public int						currentRecipeIndex;
+	public String					name;
 	
-	public ContainerAdvancedVillager	villagerContainer;
+	public ContainerVillager2		villagerContainer;
 	
-	public MerchantButton				nextRecipeButton;
-	public MerchantButton				prevRecipeButton;
-	public GuiButton					shuffleQuestsButton;
-	public GuiButton					questReward;
-	public GuiButtonTradeMode			switchModeButton;
+	public MerchantButton			nextRecipeButton;
+	public MerchantButton			prevRecipeButton;
+	public GuiButton				shuffleQuestsButton;
+	public GuiButton				rewardButton;
+	public GuiButtonTradeMode		switchModeButton;
 	
 	public GuiVillager2(InventoryPlayer inventory, EntityVillager2 merchant, World world, String name)
 	{
-		super(new ContainerAdvancedVillager(inventory, merchant, world));
-		this.villagerContainer = (ContainerAdvancedVillager) this.inventorySlots;
+		super(new ContainerVillager2(inventory, merchant, world));
+		this.villagerContainer = (ContainerVillager2) this.inventorySlots;
 		this.theVillager = merchant;
-		this.name = name != null && name.length() >= 1 ? name : StatCollector.translateToLocal("entity.Villager.name");
+		this.name = name != null && !name.isEmpty() ? name : StatCollector.translateToLocal("entity.Villager.name");
 	}
 	
 	@Override
@@ -58,11 +65,14 @@ public class GuiVillager2 extends GuiContainer
 		
 		this.buttonList.add(this.switchModeButton = new GuiButtonTradeMode(0, this.guiLeft + 116, this.guiTop + 6));
 		this.switchModeButton.questMode = this.questMode;
+		this.villagerContainer.setQuestMode(this.questMode);
 		
 		if (this.questMode)
 		{
 			this.buttonList.add(this.shuffleQuestsButton = new GuiButton(1, this.guiLeft + 125, this.guiTop + 35, 45, 20, "Shuffle"));
-			this.buttonList.add(this.questReward = new GuiButton(2, this.guiLeft + 125, this.guiTop + 55, 45, 20, "Reward"));
+			this.buttonList.add(this.rewardButton = new GuiButton(2, this.guiLeft + 125, this.guiTop + 55, 45, 20, "Reward"));
+			
+			AVIMod.instance.netHandler.sendToServer(new PacketRefreshQuests(this.theVillager));
 		}
 		else
 		{
@@ -80,6 +90,39 @@ public class GuiVillager2 extends GuiContainer
 		if (!this.questMode)
 		{
 			this.fontRendererObj.drawString(StatCollector.translateToLocal("container.inventory"), 8, this.ySize - 94, 4210752);
+		}
+		
+		int k = this.guiLeft + 8;
+		int l = this.guiTop + 17;
+		
+		if (this.questMode)
+		{
+			for (Quest quest : this.theVillager.getQuests())
+			{
+				int mx = mouseX + this.guiLeft;
+				int my = mouseY + this.guiTop;
+				
+				if (this.func_146978_c(k + 92, l + 4, 12, 12, mx, my))
+				{
+					ItemStack stack = quest.getRewardStack();
+					if (stack != null)
+					{
+						String text = I18n.getString("quest.reward", stack.stackSize, stack.getDisplayName());
+						this.drawHoveringText(Arrays.asList(text), mouseX - this.guiLeft, mouseY - this.guiTop, this.fontRendererObj);
+						
+						l += 19;
+						continue;
+					}
+				}
+				
+				if (this.func_146978_c(k, l, 108, 18, mx, my))
+				{
+					List<String> lines = new ArrayList();
+					quest.addDescription(this.mc.thePlayer, lines);
+					this.drawHoveringText(lines, mouseX - this.guiLeft, mouseY - this.guiTop, this.fontRendererObj);
+				}
+				l += 19;
+			}
 		}
 	}
 	
@@ -121,13 +164,17 @@ public class GuiVillager2 extends GuiContainer
 		}
 		else if (button == this.shuffleQuestsButton)
 		{
-			AdvancedVillagerInteraction.instance.netHandler.sendToServer(new PacketShuffleQuests(this.theVillager));
+			AVIMod.instance.netHandler.sendToServer(new PacketShuffleQuests(this.theVillager));
+		}
+		else if (button == this.rewardButton)
+		{
+			AVIMod.instance.netHandler.sendToServer(new PacketRewardQuests(this.theVillager));
 		}
 		
 		if (flag)
 		{
 			this.villagerContainer.setCurrentRecipeIndex(this.currentRecipeIndex);
-			AdvancedVillagerInteraction.instance.netHandler.sendToServer(new PacketSetRecipe(this.currentRecipeIndex));
+			AVIMod.instance.netHandler.sendToServer(new PacketSetRecipe(this.currentRecipeIndex));
 		}
 	}
 	
@@ -141,15 +188,44 @@ public class GuiVillager2 extends GuiContainer
 		if (this.questMode)
 		{
 			int k = this.guiLeft + 8;
-			int l = this.guiTop + 18;
+			int l = this.guiTop + 17;
 			
 			for (Quest quest : this.theVillager.getQuests())
 			{
-				this.fontRendererObj.drawStringWithShadow(quest.getName(), k, l, 0xFFFFFF);
-				
+				GL11.glColor4f(1F, 1F, 1F, 1F);
 				this.mc.getTextureManager().bindTexture(questBackground);
+				int color;
+				
+				if (quest.isRewarded())
+				{
+					color = 0x808080;
+				}
+				else
+				{
+					if (this.func_146978_c(k, l, 108, 18, mouseX + this.guiLeft, mouseY + this.guiTop))
+					{
+						this.drawTexturedModalRect(k, l, 0, 204, 108, 19);
+						color = 0xFFFF80;
+					}
+					else
+					{
+						this.drawTexturedModalRect(k, l, 0, 166, 108, 19);
+						color = 0xFFFFFF;
+					}
+					
+					if (quest.isCompleted())
+					{
+						color = 0x80FF80;
+					}
+				}
+				
 				int icon = QuestType.rewardIcon(quest.getReward());
-				this.drawTexturedModalRect(k + 92, l, 108 + icon * 12, 166, 12, 12);
+				if (icon != -1)
+				{
+					this.drawTexturedModalRect(k + 92, l + 4, 108 + icon * 12, 166, 12, 12);
+				}
+				
+				this.fontRendererObj.drawStringWithShadow(I18n.getString(quest.getName()), k + 2, l + 5, color);
 				l += 19;
 			}
 		}
@@ -173,16 +249,17 @@ public class GuiVillager2 extends GuiContainer
 		}
 	}
 	
+	public void drawQuestHoveringText(Quest quest, int x, int y)
+	{
+		
+	}
+	
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTickTime)
 	{
 		super.drawScreen(mouseX, mouseY, partialTickTime);
 		
-		if (this.questMode)
-		{
-			
-		}
-		else
+		if (!this.questMode)
 		{
 			MerchantRecipeList merchantrecipelist = this.theVillager.getRecipes(this.mc.thePlayer);
 			if (merchantrecipelist != null && !merchantrecipelist.isEmpty())
