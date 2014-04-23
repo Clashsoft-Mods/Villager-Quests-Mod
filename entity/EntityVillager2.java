@@ -7,7 +7,6 @@ import clashsoft.mods.avi.AVIMod;
 import clashsoft.mods.avi.api.IQuestProvider;
 import clashsoft.mods.avi.network.PacketQuestList;
 import clashsoft.mods.avi.network.PacketRecipeList;
-import clashsoft.mods.avi.quest.Quest;
 import clashsoft.mods.avi.quest.QuestList;
 
 import net.minecraft.entity.passive.EntityVillager;
@@ -33,7 +32,6 @@ public class EntityVillager2 extends EntityVillager implements IQuestProvider
 	{
 		super(world, profession);
 		this.questRandom = new Random(world.getSeed() ^ this.rand.nextLong());
-		this.shuffleQuests();
 	}
 	
 	@Override
@@ -49,34 +47,21 @@ public class EntityVillager2 extends EntityVillager implements IQuestProvider
 	}
 	
 	@Override
-	public void shuffleQuests()
+	public void shuffleQuests(EntityPlayerMP player)
 	{
-		this.quests = new QuestList(this);
-		for (int i = 0; i < 3; i++)
-		{
-			Quest quest = Quest.random(this, this.questRandom);
-			this.quests.add(quest);
-		}
+		this.quests.shuffle(player, this.questRandom);
 	}
 	
 	@Override
 	public void refreshQuests(EntityPlayerMP player)
 	{
-		for (Quest quest : this.quests)
-		{
-			quest.checkCompleted(player);
-		}
+		this.quests.refresh(player, this.questRandom);
 	}
 	
 	@Override
 	public void rewardQuests(EntityPlayerMP player)
 	{
-		int reward = 0;
-		for (Quest quest : this.quests)
-		{
-			quest.checkCompleted(player);
-			quest.reward(player);
-		}
+		this.quests.reward(player);
 	}
 	
 	public void syncRecipeList(EntityPlayerMP player)

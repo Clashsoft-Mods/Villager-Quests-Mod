@@ -2,12 +2,13 @@ package clashsoft.mods.avi.quest.type;
 
 import java.util.*;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.stats.AchievementList;
 import net.minecraft.stats.StatBase;
 import net.minecraft.stats.StatList;
 import net.minecraft.stats.StatisticsFile;
@@ -17,18 +18,30 @@ public class QuestType
 	public static Map<String, QuestType>	questMap		= new HashMap();
 	public static List<QuestType>			questList		= new ArrayList();
 	
-	public static QuestType					generic			= new QuestType("quest.generic", 0);
-	public static QuestType					collectWood		= new QuestCollect("quest.collect.wood", 1F, new ItemStack(Blocks.log));
-	public static QuestType					collectStone	= new QuestCollect("quest.collect.stone", 2F, new ItemStack(Blocks.stone));
-	public static QuestType					findDiamond		= new QuestFind("quest.find.diamond", 20, new ItemStack(Items.diamond));
+	public static QuestType					collectWood		= new QuestCollect("quest.collect.wood", 1.25F, Blocks.log);
+	public static QuestType					collectStone	= new QuestCollect("quest.collect.stone", 2F, Blocks.stone);
+	public static QuestType					collectDirt		= new QuestCollect("quest.collect.dirt", 1F, Blocks.dirt);
+	public static QuestType					collectSand		= new QuestCollect("quest.collect.sand", 1.1F, Blocks.sand);
+	public static QuestType					collectGravel	= new QuestCollect("quest.collect.gravel", 1.1F, Blocks.gravel);
 	
-	protected final int						id;
+	public static QuestType					findCoal		= new QuestFind("quest.find.coal", 5F, Items.coal, Blocks.coal_ore);
+	public static QuestType					findIron		= new QuestFind("quest.find.iron", 7.5F, Items.iron_ingot, Blocks.iron_ore);
+	public static QuestType					findGold		= new QuestFind("quest.find.gold", 10F, Items.gold_ingot, Blocks.gold_ore);
+	public static QuestType					findLapis		= new QuestFind("quest.find.lapis", 12.5F, null, Blocks.lapis_ore);
+	public static QuestType					findRedstone	= new QuestFind("quest.find.redstone", 15F, Items.redstone, Blocks.redstone_ore);
+	public static QuestType					findEmerald		= new QuestFind("quest.find.emerald", 17.5F, Items.emerald, Blocks.emerald_ore);
+	public static QuestType					findDiamond		= new QuestFind("quest.find.diamond", 20F, Items.diamond, Blocks.diamond_ore);
+	
+	public static QuestType					dungeon		= new QuestFind("quest.dungeon", 20F, null, Blocks.mossy_cobblestone);
+	public static QuestType					nether		= new QuestStat("quest.nether", 20F, AchievementList.portal);
+	
+	public static QuestType					craftPlanks		= new QuestCraft("quest.craft.planks", 1.5F, Blocks.planks);
+	
 	protected final String					name;
 	protected float							reward;
 	
 	public QuestType(String name, float reward)
 	{
-		this.id = questList.size();
 		this.name = name;
 		this.reward = reward;
 		
@@ -36,19 +49,14 @@ public class QuestType
 		questList.add(this);
 	}
 	
+	public static QuestType random(Random seed)
+	{
+		return questList.get(seed.nextInt(questList.size()));
+	}
+	
 	public static QuestType get(String name)
 	{
 		return questMap.get(name);
-	}
-	
-	public static QuestType get(int id)
-	{
-		return questList.get(id);
-	}
-	
-	public int getID()
-	{
-		return this.id;
 	}
 	
 	public String getName()
@@ -56,14 +64,24 @@ public class QuestType
 		return this.name;
 	}
 	
+	public float getReward()
+	{
+		return this.reward;
+	}
+	
 	public float getReward(int amount)
 	{
 		return this.reward * amount;
 	}
 	
+	public boolean hasAmount()
+	{
+		return false;
+	}
+	
 	public int getAmount(Random random)
 	{
-		return 1;
+		return 0;
 	}
 	
 	public boolean isCompleted(EntityPlayer player, int amount)
@@ -77,83 +95,63 @@ public class QuestType
 		{
 			return -1;
 		}
-		else if (reward < 8)
+		else if (reward < 9)
 		{
 			return 0;
 		}
-		else if (reward < 16)
+		else if (reward < 27)
 		{
 			return 1;
 		}
-		else if (reward < 32)
+		else if (reward < 81)
 		{
 			return 2;
 		}
-		else if (reward < 64)
+		else if (reward < 162)
 		{
 			return 3;
 		}
-		else if (reward < 128)
-		{
-			return 4;
-		}
-		return 5;
+		return 4;
 	}
 	
-	public static ItemStack rewardToStack(int reward)
+	public static StatisticsFile getStats(EntityPlayer player)
 	{
-		if (reward == 0)
-		{
-			return null;
-		}
-		else if (reward < 8)
-		{
-			return new ItemStack(Items.gold_nugget, reward);
-		}
-		else if (reward < 16)
-		{
-			return new ItemStack(Items.gold_ingot, reward / 8);
-		}
-		else if (reward < 32)
-		{
-			return new ItemStack(Items.emerald, reward / 16);
-		}
-		else if (reward < 64)
-		{
-			return new ItemStack(Items.diamond, reward / 32);
-		}
-		return null;
+		return ((EntityPlayerMP) player).func_147099_x();
 	}
 	
-	public static int getItemCount(EntityPlayer player, ItemStack stack)
+	public static int getItemCount(EntityPlayer player, Item item, Block block)
 	{
 		int count = 0;
-		int id = Item.getIdFromItem(stack.getItem());
-		StatisticsFile stats = ((EntityPlayerMP) player).func_147099_x();
+		StatisticsFile stats = getStats(player);
 		StatBase stat;
 		
-		stat = (StatBase) StatList.mineBlockStatArray[id];
-		if (stat != null)
-			count += stats.writeStat(stat);
+		if (block != null)
+		{
+			stat = (StatBase) StatList.mineBlockStatArray[Block.getIdFromBlock(block)];
+			if (stat != null)
+				count += stats.writeStat(stat);
+		}
 		
-		stat = (StatBase) StatList.objectCraftStats[id];
-		if (stat != null)
-			count += stats.writeStat(stat);
+		if (item != null)
+		{
+			stat = (StatBase) StatList.objectCraftStats[Item.getIdFromItem(item)];
+			if (stat != null)
+				count += stats.writeStat(stat);
+		}
 		
 		return count;
 	}
-
+	
 	@Override
 	public int hashCode()
 	{
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + this.id;
 		result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
 		result = prime * result + Float.floatToIntBits(this.reward);
 		return result;
 	}
-
+	
 	@Override
 	public boolean equals(Object obj)
 	{
@@ -164,25 +162,22 @@ public class QuestType
 		if (getClass() != obj.getClass())
 			return false;
 		QuestType other = (QuestType) obj;
-		if (this.id != other.id)
-			return false;
 		if (this.reward != other.reward)
-		if (this.name == null)
-		{
-			if (other.name != null)
+			if (this.name == null)
+			{
+				if (other.name != null)
+					return false;
+			}
+			else if (!this.name.equals(other.name))
 				return false;
-		}
-		else if (!this.name.equals(other.name))
-			return false;
 		return true;
 	}
-
+	
 	@Override
 	public String toString()
 	{
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("QuestType [id=").append(this.id);
-		stringBuilder.append(", name=").append(this.name);
+		stringBuilder.append("QuestType [name=").append(this.name);
 		stringBuilder.append(", reward=").append(this.reward);
 		stringBuilder.append("]");
 		return stringBuilder.toString();

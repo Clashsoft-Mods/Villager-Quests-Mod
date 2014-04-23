@@ -6,21 +6,19 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 
-public class QuestCollect extends QuestType
+public class QuestCraft extends QuestType
 {
 	public Item item;
-	public Block block;
 	
-	public QuestCollect(String name, float reward, Block block)
+	public QuestCraft(String name, float reward, Block block)
 	{
-		this(name, reward, Item.getItemFromBlock(block), block);
+		this(name, reward, Item.getItemFromBlock(block));
 	}
 	
-	public QuestCollect(String name, float reward, Item item, Block block)
+	public QuestCraft(String name, float reward, Item item)
 	{
 		super(name, reward);
 		this.item = item;
-		this.block = block;
 	}
 	
 	@Override
@@ -32,13 +30,13 @@ public class QuestCollect extends QuestType
 	@Override
 	public int getAmount(Random random)
 	{
-		int i = (int) (this.reward * 3F);
+		int i = (int) (this.reward * 2.5F);
 		return random.nextInt(16) + i;
 	}
 	
 	@Override
 	public boolean isCompleted(EntityPlayer player, int amount)
 	{
-		return QuestType.getItemCount(player, this.item, this.block) >= amount;
+		return QuestType.getItemCount(player, this.item, null) >= amount;
 	}
 }

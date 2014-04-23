@@ -1,5 +1,7 @@
 package clashsoft.mods.avi.quest;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -9,6 +11,7 @@ import clashsoft.mods.avi.api.IQuestProvider;
 import clashsoft.mods.avi.quest.type.QuestType;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
@@ -17,12 +20,12 @@ public class Quest
 {
 	private IQuestProvider	provider;
 	private QuestType		type;
-	private int				amount;
+	public int				amount;
 	
 	private boolean			completed;
 	private boolean			rewarded;
 	
-	private ItemStack rewardStack;
+	private List<ItemStack>	rewards;
 	
 	public Quest()
 	{
@@ -52,7 +55,16 @@ public class Quest
 	
 	public int getReward()
 	{
-		return (int) (this.type.getReward(this.amount) * this.provider.getRewardMultiplier());
+		float f;
+		if (this.hasAmount())
+		{
+			f = this.type.getReward(this.amount);
+		}
+		else
+		{
+			f = this.type.getReward();
+		}
+		return (int) (f * this.provider.getRewardMultiplier());
 	}
 	
 	public void setProvider(IQuestProvider provider)
@@ -62,8 +74,9 @@ public class Quest
 	
 	public static Quest random(IQuestProvider provider, Random seed)
 	{
-		QuestType type = QuestType.questList.get(seed.nextInt(QuestType.questList.size()));
-		return new Quest(provider, type, type.getAmount(seed));
+		QuestType type = QuestType.random(seed);
+		int amount = type.getAmount(seed);
+		return new Quest(provider, type, amount);
 	}
 	
 	public boolean isCompleted()
@@ -76,29 +89,83 @@ public class Quest
 		return this.rewarded;
 	}
 	
-	public void checkCompleted(EntityPlayer player)
+	public boolean hasAmount()
 	{
-		this.completed = this.type.isCompleted(player, this.amount);
+		return this.type.hasAmount();
 	}
 	
-	public ItemStack getRewardStack()
+	public boolean checkCompleted(EntityPlayer player)
 	{
-		if (this.rewardStack == null)
+		if (player == null)
+			return false;
+		
+		this.completed = this.type.isCompleted(player, this.amount);
+		if (!this.completed)
+			this.rewarded = false;
+		return this.completed;
+	}
+	
+	public List<ItemStack> getRewards()
+	{
+		if (this.rewards == null)
 		{
-			this.rewardStack = QuestType.rewardToStack(this.getReward());
+			int i = this.getReward();
+			
+			if (i == 0)
+			{
+				this.rewards = Collections.EMPTY_LIST;
+				return this.rewards;
+			}
+			
+			List<ItemStack> rewards = new ArrayList();
+			while (i > 0)
+			{
+				if (i < 9)
+				{
+					rewards.add(new ItemStack(Items.gold_nugget, i));
+					break;
+				}
+				else if (i < 27)
+				{
+					int j = i / 9;
+					rewards.add(new ItemStack(Items.gold_ingot, j));
+					i -= j * 9;
+				}
+				else if (i < 81)
+				{
+					int j = i / 27;
+					rewards.add(new ItemStack(Items.emerald, j));
+					i -= j * 27;
+				}
+				else if (i < 162)
+				{
+					int j = i / 81;
+					rewards.add(new ItemStack(Items.diamond, j));
+					i -= j * 81;
+				}
+				else
+				{
+					int j = i / 162;
+					rewards.add(new ItemStack(Items.experience_bottle, j));
+					i -= j * 162;
+				}
+			}
+			this.rewards = rewards;
 		}
-		return this.rewardStack;
+		return this.rewards;
 	}
 	
 	public void reward(EntityPlayer player)
 	{
 		if (this.completed && !this.rewarded)
 		{
-			ItemStack stack = this.getRewardStack();
-			if (player.inventory.addItemStackToInventory(stack))
+			for (ItemStack stack : this.getRewards())
 			{
-				this.rewarded = true;
+				if (player.inventory.addItemStackToInventory(stack))
+				{
+				}
 			}
+			this.rewarded = true;
 		}
 	}
 	
@@ -133,7 +200,7 @@ public class Quest
 	
 	public void writeToNBT(NBTTagCompound nbt)
 	{
-		nbt.setInteger("Type", this.type.getID());
+		nbt.setString("Type", this.type.getName());
 		nbt.setInteger("Amount", this.amount);
 		nbt.setBoolean("Completed", this.completed);
 		nbt.setBoolean("Rewarded", this.rewarded);
@@ -141,7 +208,7 @@ public class Quest
 	
 	public void writeToBuffer(PacketBuffer buffer)
 	{
-		buffer.writeInt(this.type.getID());
+		buffer.writeStringToBuffer(this.type.getName());
 		buffer.writeInt(this.amount);
 		buffer.writeBoolean(this.completed);
 		buffer.writeBoolean(this.rewarded);
@@ -149,7 +216,7 @@ public class Quest
 	
 	public void readFromNBT(NBTTagCompound nbt)
 	{
-		this.type = QuestType.get(nbt.getInteger("Type"));
+		this.type = QuestType.get(nbt.getString("Type"));
 		this.amount = nbt.getInteger("Amount");
 		this.completed = nbt.getBoolean("Completed");
 		this.rewarded = nbt.getBoolean("Rewarded");
@@ -157,12 +224,12 @@ public class Quest
 	
 	public void readFromBuffer(PacketBuffer buffer)
 	{
-		this.type = QuestType.get(buffer.readInt());
+		this.type = QuestType.get(buffer.readStringFromBuffer(0xFFFF));
 		this.amount = buffer.readInt();
 		this.completed = buffer.readBoolean();
 		this.rewarded = buffer.readBoolean();
 	}
-
+	
 	@Override
 	public int hashCode()
 	{
@@ -174,7 +241,7 @@ public class Quest
 		result = prime * result + ((this.type == null) ? 0 : this.type.hashCode());
 		return result;
 	}
-
+	
 	@Override
 	public boolean equals(Object obj)
 	{
@@ -200,7 +267,7 @@ public class Quest
 			return false;
 		return true;
 	}
-
+	
 	@Override
 	public String toString()
 	{

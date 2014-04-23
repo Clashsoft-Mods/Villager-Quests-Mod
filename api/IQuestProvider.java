@@ -7,7 +7,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 
 public interface IQuestProvider extends IMerchant
 {
-	public void shuffleQuests();
+	public void shuffleQuests(EntityPlayerMP player);
 	
 	public void refreshQuests(EntityPlayerMP player);
 	

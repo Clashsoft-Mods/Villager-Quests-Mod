@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import clashsoft.mods.avi.api.IQuestProvider;
+import clashsoft.mods.avi.quest.type.QuestType;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.PacketBuffer;
@@ -12,6 +14,8 @@ import net.minecraft.network.PacketBuffer;
 public class QuestList extends ArrayList<Quest>
 {
 	private static final long	serialVersionUID	= -3968245030216357893L;
+	
+	public static boolean		COMPLETE_ALL		= false;
 	
 	public IQuestProvider		provider;
 	
@@ -39,12 +43,74 @@ public class QuestList extends ArrayList<Quest>
 		return super.add(quest);
 	}
 	
-	public void shuffle(Random random)
+	public void shuffle(EntityPlayer player, Random random)
 	{
-		this.clear();
-		for (int i = 0; i < 2; i++)
+		if (COMPLETE_ALL)
 		{
-			this.add(Quest.random(this.provider, random));
+			for (Quest quest : this)
+			{
+				if (!quest.checkCompleted(player))
+				{
+					return;
+				}
+			}
+		}
+		
+		this.clear();
+		for (int i = 0; i < 32 && this.size() < 3; i++)
+		{
+			Quest quest = Quest.random(provider, random);
+			
+			if (!this.containsType(quest.getType()))
+			{
+				if (quest.hasAmount())
+				{
+					while (quest.checkCompleted(player) && quest.amount < 1024)
+					{
+						quest.amount += quest.getType().getAmount(random);
+					}
+				}
+				else if (quest.checkCompleted(player))
+				{
+					continue;
+				}
+				this.add(quest);
+			}
+		}
+	}
+	
+	public boolean containsType(QuestType type)
+	{
+		for (Quest quest : this)
+		{
+			if (quest != null && quest.getType() == type)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public void refresh(EntityPlayer player, Random random)
+	{
+		boolean flag = true;
+		for (Quest quest : this)
+		{
+			flag &= quest.checkCompleted(player) & quest.isRewarded();
+		}
+		if (flag)
+		{
+			this.shuffle(player, random);
+		}
+	}
+	
+	public void reward(EntityPlayer player)
+	{
+		int reward = 0;
+		for (Quest quest : this)
+		{
+			quest.checkCompleted(player);
+			quest.reward(player);
 		}
 	}
 	
@@ -73,13 +139,20 @@ public class QuestList extends ArrayList<Quest>
 	{
 		QuestList quests = new QuestList(null);
 		
-		NBTTagList list = nbt.getTagList("Quests", 11);
-		for (int i = 0; i < list.tagCount(); i++)
+		NBTTagList list = (NBTTagList) nbt.getTag("Quests");
+		if (list != null)
 		{
-			NBTTagCompound nbt1 = list.getCompoundTagAt(i);
-			Quest q = new Quest();
-			q.readFromNBT(nbt1);
-			quests.add(q);
+			for (int i = 0; i < list.tagCount(); i++)
+			{
+				NBTTagCompound nbt1 = list.getCompoundTagAt(i);
+				Quest q = new Quest();
+				q.readFromNBT(nbt1);
+				quests.add(q);
+			}
+		}
+		else
+		{
+			quests.shuffle(null, new Random());
 		}
 		
 		return quests;

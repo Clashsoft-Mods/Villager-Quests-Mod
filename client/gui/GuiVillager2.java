@@ -1,7 +1,6 @@
 package clashsoft.mods.avi.client.gui;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
@@ -63,14 +62,17 @@ public class GuiVillager2 extends GuiContainer
 		super.initGui();
 		this.buttonList.clear();
 		
-		this.buttonList.add(this.switchModeButton = new GuiButtonTradeMode(0, this.guiLeft + 116, this.guiTop + 6));
+		this.buttonList.add(this.switchModeButton = new GuiButtonTradeMode(0, this.guiLeft + 117, this.guiTop + 6));
 		this.switchModeButton.questMode = this.questMode;
 		this.villagerContainer.setQuestMode(this.questMode);
 		
 		if (this.questMode)
 		{
-			this.buttonList.add(this.shuffleQuestsButton = new GuiButton(1, this.guiLeft + 125, this.guiTop + 35, 45, 20, "Shuffle"));
-			this.buttonList.add(this.rewardButton = new GuiButton(2, this.guiLeft + 125, this.guiTop + 55, 45, 20, "Reward"));
+			if (this.mc.thePlayer.capabilities.isCreativeMode)
+			{
+				this.buttonList.add(this.shuffleQuestsButton = new GuiButton(1, this.guiLeft + 122, this.guiTop + 35, 45, 20, "Shuffle"));
+			}
+			this.buttonList.add(this.rewardButton = new GuiButton(2, this.guiLeft + 119, this.guiTop + 55, 50, 20, "Reward"));
 			
 			AVIMod.instance.netHandler.sendToServer(new PacketRefreshQuests(this.theVillager));
 		}
@@ -92,6 +94,11 @@ public class GuiVillager2 extends GuiContainer
 			this.fontRendererObj.drawString(StatCollector.translateToLocal("container.inventory"), 8, this.ySize - 94, 4210752);
 		}
 		
+		if (this.switchModeButton.func_146115_a())
+		{
+			this.drawCreativeTabHoveringText(I18n.getString(this.questMode ? "button.trademode" : "button.questmode"), mouseX - this.guiLeft, mouseY - this.guiTop);
+		}
+		
 		int k = this.guiLeft + 8;
 		int l = this.guiTop + 17;
 		
@@ -104,11 +111,18 @@ public class GuiVillager2 extends GuiContainer
 				
 				if (this.func_146978_c(k + 92, l + 4, 12, 12, mx, my))
 				{
-					ItemStack stack = quest.getRewardStack();
-					if (stack != null)
+					List<ItemStack> reward = quest.getRewards();
+					if (reward != null && !reward.isEmpty())
 					{
-						String text = I18n.getString("quest.reward", stack.stackSize, stack.getDisplayName());
-						this.drawHoveringText(Arrays.asList(text), mouseX - this.guiLeft, mouseY - this.guiTop, this.fontRendererObj);
+						List<String> lines = new ArrayList();
+						
+						lines.add(I18n.getString("quest.reward"));
+						for (ItemStack stack : reward)
+						{
+							String s = String.format(" \u00a77%d %s", stack.stackSize, stack.getDisplayName());
+							lines.add(s);
+						}
+						this.drawHoveringText(lines, mouseX - this.guiLeft, mouseY - this.guiTop, this.fontRendererObj);
 						
 						l += 19;
 						continue;
