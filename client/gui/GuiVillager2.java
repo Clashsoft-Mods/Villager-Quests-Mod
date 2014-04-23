@@ -70,9 +70,9 @@ public class GuiVillager2 extends GuiContainer
 		{
 			if (this.mc.thePlayer.capabilities.isCreativeMode)
 			{
-				this.buttonList.add(this.shuffleQuestsButton = new GuiButton(1, this.guiLeft + 122, this.guiTop + 35, 45, 20, "Shuffle"));
+				this.buttonList.add(this.shuffleQuestsButton = new GuiButton(1, this.guiLeft + 119, this.guiTop + 37, 50, 20, "Shuffle"));
 			}
-			this.buttonList.add(this.rewardButton = new GuiButton(2, this.guiLeft + 119, this.guiTop + 55, 50, 20, "Reward"));
+			this.buttonList.add(this.rewardButton = new GuiButton(2, this.guiLeft + 119, this.guiTop + 59, 50, 20, "Reward"));
 			
 			AVIMod.instance.netHandler.sendToServer(new PacketRefreshQuests(this.theVillager));
 		}
@@ -88,7 +88,7 @@ public class GuiVillager2 extends GuiContainer
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
 	{
-		this.fontRendererObj.drawString(this.name, 60 - this.fontRendererObj.getStringWidth(this.name) / 2, this.questMode ? 6 : 10, 4210752);
+		this.fontRendererObj.drawString(this.name, 60 - this.fontRendererObj.getStringWidth(this.name) / 2, 8, 4210752);
 		if (!this.questMode)
 		{
 			this.fontRendererObj.drawString(StatCollector.translateToLocal("container.inventory"), 8, this.ySize - 94, 4210752);
@@ -100,7 +100,7 @@ public class GuiVillager2 extends GuiContainer
 		}
 		
 		int k = this.guiLeft + 8;
-		int l = this.guiTop + 17;
+		int l = this.guiTop + 21;
 		
 		if (this.questMode)
 		{
@@ -119,7 +119,7 @@ public class GuiVillager2 extends GuiContainer
 						lines.add(I18n.getString("quest.reward"));
 						for (ItemStack stack : reward)
 						{
-							String s = String.format(" \u00a77%d %s", stack.stackSize, stack.getDisplayName());
+							String s = String.format(" \u00a77%dx %s", stack.stackSize, stack.getDisplayName());
 							lines.add(s);
 						}
 						this.drawHoveringText(lines, mouseX - this.guiLeft, mouseY - this.guiTop, this.fontRendererObj);
@@ -202,7 +202,7 @@ public class GuiVillager2 extends GuiContainer
 		if (this.questMode)
 		{
 			int k = this.guiLeft + 8;
-			int l = this.guiTop + 17;
+			int l = this.guiTop + 21;
 			
 			for (Quest quest : this.theVillager.getQuests())
 			{
@@ -218,12 +218,12 @@ public class GuiVillager2 extends GuiContainer
 				{
 					if (this.func_146978_c(k, l, 108, 18, mouseX + this.guiLeft, mouseY + this.guiTop))
 					{
-						this.drawTexturedModalRect(k, l, 0, 204, 108, 19);
+						this.drawTexturedModalRect(k, l, 0, 223, 108, 19);
 						color = 0xFFFF80;
 					}
 					else
 					{
-						this.drawTexturedModalRect(k, l, 0, 166, 108, 19);
+						this.drawTexturedModalRect(k, l, 0, 204, 108, 19);
 						color = 0xFFFFFF;
 					}
 					
@@ -239,7 +239,7 @@ public class GuiVillager2 extends GuiContainer
 					this.drawTexturedModalRect(k + 92, l + 4, 108 + icon * 12, 166, 12, 12);
 				}
 				
-				this.fontRendererObj.drawStringWithShadow(I18n.getString(quest.getName()), k + 2, l + 5, color);
+				this.fontRendererObj.drawStringWithShadow(I18n.getString(quest.getName()), k + 3, l + 5, color);
 				l += 19;
 			}
 		}

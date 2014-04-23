@@ -32,10 +32,12 @@ public class QuestType
 	public static QuestType					findEmerald		= new QuestFind("quest.find.emerald", 17.5F, Items.emerald, Blocks.emerald_ore);
 	public static QuestType					findDiamond		= new QuestFind("quest.find.diamond", 20F, Items.diamond, Blocks.diamond_ore);
 	
-	public static QuestType					dungeon		= new QuestFind("quest.dungeon", 20F, null, Blocks.mossy_cobblestone);
-	public static QuestType					nether		= new QuestStat("quest.nether", 20F, AchievementList.portal);
+	public static QuestType					dungeon			= new QuestFind("quest.dungeon", 20F, null, Blocks.mossy_cobblestone);
+	public static QuestType					nether			= new QuestStat("quest.nether", 20F, AchievementList.portal);
+	public static QuestType					end				= new QuestStat("quest.end", 25F, AchievementList.theEnd);
 	
 	public static QuestType					craftPlanks		= new QuestCraft("quest.craft.planks", 1.5F, Blocks.planks);
+	public static QuestType					craftSticks		= new QuestCraft("quest.craft.sticks", 1F, Items.stick);
 	
 	protected final String					name;
 	protected float							reward;
