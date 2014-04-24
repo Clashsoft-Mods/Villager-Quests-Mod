@@ -119,7 +119,7 @@ public class GuiVillager2 extends GuiContainer
 						lines.add(I18n.getString("quest.reward"));
 						for (ItemStack stack : reward)
 						{
-							String s = String.format(" \u00a77%dx %s", stack.stackSize, stack.getDisplayName());
+							String s = String.format("\u00a77%dx %s", stack.stackSize, stack.getDisplayName());
 							lines.add(s);
 						}
 						this.drawHoveringText(lines, mouseX - this.guiLeft, mouseY - this.guiTop, this.fontRendererObj);
@@ -212,7 +212,8 @@ public class GuiVillager2 extends GuiContainer
 				
 				if (quest.isRewarded())
 				{
-					color = 0x808080;
+					this.drawTexturedModalRect(k, l, 0, 185, 108, 19);
+					color = 0xA4A4A4;
 				}
 				else
 				{
