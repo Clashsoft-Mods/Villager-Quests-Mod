@@ -15,8 +15,6 @@ public class QuestList extends ArrayList<Quest>
 {
 	private static final long	serialVersionUID	= -3968245030216357893L;
 	
-	public static boolean		COMPLETE_ALL		= false;
-	
 	public IQuestProvider		provider;
 	
 	public QuestList(IQuestProvider provider)
@@ -45,19 +43,9 @@ public class QuestList extends ArrayList<Quest>
 	
 	public void shuffle(EntityPlayer player, Random random)
 	{
-		if (COMPLETE_ALL)
-		{
-			for (Quest quest : this)
-			{
-				if (!quest.checkCompleted(player))
-				{
-					return;
-				}
-			}
-		}
-		
 		this.clear();
-		for (int i = 0; i < 32 && this.size() < 3; i++)
+		int len = QuestType.questList.size();
+		for (int i = 0; i < len; i++)
 		{
 			Quest quest = Quest.random(provider, random);
 			
@@ -65,18 +53,22 @@ public class QuestList extends ArrayList<Quest>
 			{
 				if (quest.hasAmount())
 				{
-					while (quest.checkCompleted(player) && quest.amount < 1024)
+					while (quest.checkCompleted(player) && random.nextInt(1024) > 0)
 					{
 						quest.amount += quest.getType().getAmount(random);
 					}
 				}
 				else if (quest.checkCompleted(player))
-				{
 					continue;
-				}
+				
 				this.add(quest);
+				
+				if (this.size() == 3)
+					break;
 			}
 		}
+		
+		this.refresh(player, random);
 	}
 	
 	public boolean containsType(QuestType type)
