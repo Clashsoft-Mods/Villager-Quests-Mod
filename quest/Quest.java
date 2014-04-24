@@ -97,11 +97,15 @@ public class Quest
 	public boolean checkCompleted(EntityPlayer player)
 	{
 		if (player == null)
+		{
 			return false;
+		}
 		
 		this.completed = this.type.isCompleted(player, this.amount);
 		if (!this.completed)
+		{
 			this.rewarded = false;
+		}
 		return this.completed;
 	}
 	
@@ -238,7 +242,7 @@ public class Quest
 		result = prime * result + this.amount;
 		result = prime * result + (this.completed ? 1231 : 1237);
 		result = prime * result + (this.rewarded ? 1231 : 1237);
-		result = prime * result + ((this.type == null) ? 0 : this.type.hashCode());
+		result = prime * result + (this.type == null ? 0 : this.type.hashCode());
 		return result;
 	}
 	
@@ -246,25 +250,41 @@ public class Quest
 	public boolean equals(Object obj)
 	{
 		if (this == obj)
+		{
 			return true;
+		}
 		if (obj == null)
+		{
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (this.getClass() != obj.getClass())
+		{
 			return false;
+		}
 		Quest other = (Quest) obj;
 		if (this.amount != other.amount)
+		{
 			return false;
+		}
 		if (this.completed != other.completed)
+		{
 			return false;
+		}
 		if (this.rewarded != other.rewarded)
+		{
 			return false;
+		}
 		if (this.type == null)
 		{
 			if (other.type != null)
+			{
 				return false;
+			}
 		}
 		else if (!this.type.equals(other.type))
+		{
 			return false;
+		}
 		return true;
 	}
 	

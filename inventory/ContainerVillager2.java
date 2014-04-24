@@ -14,9 +14,9 @@ public class ContainerVillager2 extends Container
 	public IMerchant			theMerchant;
 	public InventoryMerchant	merchantInventory;
 	
-	private Slot inputSlot1;
-	private Slot inputSlot2;
-	private Slot outputSlot;
+	private Slot				inputSlot1;
+	private Slot				inputSlot2;
+	private Slot				outputSlot;
 	
 	private final World			theWorld;
 	
@@ -27,7 +27,7 @@ public class ContainerVillager2 extends Container
 		this.merchantInventory = new InventoryMerchant(inventory.player, merchant);
 		
 		this.inputSlot1 = new Slot(this.merchantInventory, 0, 8, 53);
-		this.inputSlot2  = new Slot(this.merchantInventory, 1, 34, 53);
+		this.inputSlot2 = new Slot(this.merchantInventory, 1, 34, 53);
 		this.outputSlot = new SlotMerchantResult(inventory.player, merchant, this.merchantInventory, 2, 92, 53);
 		this.addSlotToContainer(this.inputSlot1);
 		this.addSlotToContainer(this.inputSlot2);

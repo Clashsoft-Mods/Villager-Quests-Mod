@@ -19,7 +19,7 @@ public class GuiButtonTradeMode extends GuiButton
 	{
 		if (this.visible)
 		{
-			this.field_146123_n = ((mouseX >= this.xPosition) && (mouseY >= this.yPosition) && (mouseX < this.xPosition + this.width) && (mouseY < this.yPosition + this.height));
+			this.field_146123_n = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
 			
 			mc.getTextureManager().bindTexture(GuiVillager2.questBackground);
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);

@@ -47,7 +47,7 @@ public class QuestList extends ArrayList<Quest>
 		int len = QuestType.questList.size();
 		for (int i = 0; i < len; i++)
 		{
-			Quest quest = Quest.random(provider, random);
+			Quest quest = Quest.random(this.provider, random);
 			
 			if (!this.containsType(quest.getType()))
 			{
@@ -59,12 +59,16 @@ public class QuestList extends ArrayList<Quest>
 					}
 				}
 				else if (quest.checkCompleted(player))
+				{
 					continue;
+				}
 				
 				this.add(quest);
 				
 				if (this.size() == 3)
+				{
 					break;
+				}
 			}
 		}
 		

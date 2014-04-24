@@ -18,17 +18,19 @@ public class MerchantButton extends GuiButton
 	@Override
 	public void drawButton(Minecraft mc, int mouseX, int mouseY)
 	{
-		if (!(this.visible))
+		if (!this.visible)
+		{
 			return;
+		}
 		
 		mc.getTextureManager().bindTexture(GuiVillager2.tradeBackground);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		
-		int i = ((mouseX >= this.xPosition) && (mouseY >= this.yPosition) && (mouseX < this.xPosition + this.width) && (mouseY < this.yPosition + this.height)) ? 1 : 0;
+		int i = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height ? 1 : 0;
 		int j = 0;
 		int k = 176;
 		
-		if (!(this.enabled))
+		if (!this.enabled)
 		{
 			k += this.width * 2;
 		}
@@ -36,7 +38,7 @@ public class MerchantButton extends GuiButton
 		{
 			k += this.width;
 		}
-		if (!(this.field_146157_o))
+		if (!this.field_146157_o)
 		{
 			j += this.height;
 		}

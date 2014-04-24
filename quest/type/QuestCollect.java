@@ -8,8 +8,8 @@ import net.minecraft.item.Item;
 
 public class QuestCollect extends QuestType
 {
-	public Item item;
-	public Block block;
+	public Item		item;
+	public Block	block;
 	
 	public QuestCollect(String name, float reward, Block block)
 	{
