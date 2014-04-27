@@ -1,4 +1,4 @@
-package clashsoft.mods.avi.network;
+package clashsoft.mods.villagerquests.network;
 
 import clashsoft.cslib.minecraft.network.CSNetHandler;
 

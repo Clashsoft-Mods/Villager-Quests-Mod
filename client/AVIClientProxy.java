@@ -1,8 +1,8 @@
-package clashsoft.mods.avi.client;
+package clashsoft.mods.villagerquests.client;
 
-import clashsoft.mods.avi.client.gui.GuiVillager2;
-import clashsoft.mods.avi.common.AVIProxy;
-import clashsoft.mods.avi.entity.EntityVillager2;
+import clashsoft.mods.villagerquests.client.gui.GuiVillager2;
+import clashsoft.mods.villagerquests.common.AVIProxy;
+import clashsoft.mods.villagerquests.entity.EntityVillager2;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;

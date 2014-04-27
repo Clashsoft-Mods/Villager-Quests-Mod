@@ -1,4 +1,4 @@
-package clashsoft.mods.avi.client.gui;
+package clashsoft.mods.villagerquests.client.gui;
 
 import org.lwjgl.opengl.GL11;
 

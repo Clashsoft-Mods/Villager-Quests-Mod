@@ -1,8 +1,8 @@
-package clashsoft.mods.avi.common;
+package clashsoft.mods.villagerquests.common;
 
 import clashsoft.cslib.minecraft.common.BaseProxy;
-import clashsoft.mods.avi.entity.EntityVillager2;
-import clashsoft.mods.avi.inventory.ContainerVillager2;
+import clashsoft.mods.villagerquests.entity.EntityVillager2;
+import clashsoft.mods.villagerquests.inventory.ContainerVillager2;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;

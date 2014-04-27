@@ -1,13 +1,13 @@
-package clashsoft.mods.avi.entity;
+package clashsoft.mods.villagerquests.entity;
 
 import java.util.Random;
 
 import clashsoft.cslib.reflect.CSReflection;
-import clashsoft.mods.avi.AVIMod;
-import clashsoft.mods.avi.api.IQuestProvider;
-import clashsoft.mods.avi.network.PacketQuestList;
-import clashsoft.mods.avi.network.PacketRecipeList;
-import clashsoft.mods.avi.quest.QuestList;
+import clashsoft.mods.villagerquests.VillagerQuestsMod;
+import clashsoft.mods.villagerquests.network.PacketQuestList;
+import clashsoft.mods.villagerquests.network.PacketRecipeList;
+import clashsoft.mods.villagerquests.quest.IQuestProvider;
+import clashsoft.mods.villagerquests.quest.QuestList;
 
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -66,12 +66,12 @@ public class EntityVillager2 extends EntityVillager implements IQuestProvider
 	
 	public void syncRecipeList(EntityPlayerMP player)
 	{
-		AVIMod.instance.netHandler.sendTo(new PacketRecipeList(this, this.getRecipes(player)), player);
+		VillagerQuestsMod.instance.netHandler.sendTo(new PacketRecipeList(this, this.getRecipes(player)), player);
 	}
 	
 	public void syncQuests(EntityPlayerMP player)
 	{
-		AVIMod.instance.netHandler.sendTo(new PacketQuestList(this, this.quests), player);
+		VillagerQuestsMod.instance.netHandler.sendTo(new PacketQuestList(this, this.quests), player);
 	}
 	
 	@Override
@@ -112,7 +112,7 @@ public class EntityVillager2 extends EntityVillager implements IQuestProvider
 				this.setCustomer(player);
 				this.syncRecipeList((EntityPlayerMP) player);
 				this.syncQuests((EntityPlayerMP) player);
-				player.openGui(AVIMod.instance, 0, this.worldObj, this.getEntityId(), 0, 0);
+				player.openGui(VillagerQuestsMod.instance, 0, this.worldObj, this.getEntityId(), 0, 0);
 			}
 			
 			return true;

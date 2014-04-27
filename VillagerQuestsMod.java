@@ -1,12 +1,12 @@
-package clashsoft.mods.avi;
+package clashsoft.mods.villagerquests;
 
 import clashsoft.cslib.minecraft.ClashsoftMod;
 import clashsoft.cslib.minecraft.entity.CSEntities;
 import clashsoft.cslib.minecraft.update.CSUpdate;
-import clashsoft.mods.avi.common.AVIEventHandler;
-import clashsoft.mods.avi.common.AVIProxy;
-import clashsoft.mods.avi.entity.EntityVillager2;
-import clashsoft.mods.avi.network.AVINetHandler;
+import clashsoft.mods.villagerquests.common.AVIEventHandler;
+import clashsoft.mods.villagerquests.common.AVIProxy;
+import clashsoft.mods.villagerquests.entity.EntityVillager2;
+import clashsoft.mods.villagerquests.network.AVINetHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
@@ -15,26 +15,26 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
-@Mod(modid = AVIMod.MODID, name = AVIMod.NAME, version = AVIMod.VERSION)
-public class AVIMod extends ClashsoftMod<AVINetHandler>
+@Mod(modid = VillagerQuestsMod.MODID, name = VillagerQuestsMod.NAME, version = VillagerQuestsMod.VERSION)
+public class VillagerQuestsMod extends ClashsoftMod<AVINetHandler>
 {
-	public static final String	MODID	= "advancedvillagerinteraction";
-	public static final String	NAME	= "Advanced Villager Interaction";
-	public static final String	ACRONYM	= "avi";
+	public static final String	MODID	= "villagerquests";
+	public static final String	NAME	= "Villager Quests Mod";
+	public static final String	ACRONYM	= "vqm";
 	public static final String	VERSION	= CSUpdate.CURRENT_VERSION + "-1.0.0";
 	
 	@Instance(MODID)
-	public static AVIMod		instance;
+	public static VillagerQuestsMod		instance;
 	
-	@SidedProxy(clientSide = "clashsoft.mods.avi.client.AVIClientProxy", serverSide = "clashsoft.mods.avi.common.AVIProxy")
+	@SidedProxy(clientSide = "clashsoft.mods.villagerquests.client.AVIClientProxy", serverSide = "clashsoft.mods.villagerquests.common.AVIProxy")
 	public static AVIProxy		proxy;
 	
-	public AVIMod()
+	public VillagerQuestsMod()
 	{
 		super(proxy, MODID, NAME, ACRONYM, VERSION);
 		this.netHandlerClass = AVINetHandler.class;
 		this.eventHandler = new AVIEventHandler();
-		this.url = "https://github.com/Clashsoft/Advanced-Villager-Interaction/wiki/";
+		this.url = "https://github.com/Clashsoft/Villager-Quests-Mod/wiki/";
 	}
 	
 	@Override

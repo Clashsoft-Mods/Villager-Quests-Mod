@@ -1,4 +1,4 @@
-package clashsoft.mods.avi.client.gui;
+package clashsoft.mods.villagerquests.client.gui;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,16 +7,16 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
 import clashsoft.cslib.minecraft.lang.I18n;
-import clashsoft.mods.avi.AVIMod;
-import clashsoft.mods.avi.api.IQuestProvider;
-import clashsoft.mods.avi.entity.EntityVillager2;
-import clashsoft.mods.avi.inventory.ContainerVillager2;
-import clashsoft.mods.avi.network.PacketRefreshQuests;
-import clashsoft.mods.avi.network.PacketRewardQuests;
-import clashsoft.mods.avi.network.PacketSetRecipe;
-import clashsoft.mods.avi.network.PacketShuffleQuests;
-import clashsoft.mods.avi.quest.Quest;
-import clashsoft.mods.avi.quest.type.QuestType;
+import clashsoft.mods.villagerquests.VillagerQuestsMod;
+import clashsoft.mods.villagerquests.entity.EntityVillager2;
+import clashsoft.mods.villagerquests.inventory.ContainerVillager2;
+import clashsoft.mods.villagerquests.network.PacketRefreshQuests;
+import clashsoft.mods.villagerquests.network.PacketRewardQuests;
+import clashsoft.mods.villagerquests.network.PacketSetRecipe;
+import clashsoft.mods.villagerquests.network.PacketShuffleQuests;
+import clashsoft.mods.villagerquests.quest.IQuestProvider;
+import clashsoft.mods.villagerquests.quest.Quest;
+import clashsoft.mods.villagerquests.quest.type.QuestType;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -74,7 +74,7 @@ public class GuiVillager2 extends GuiContainer
 			}
 			this.buttonList.add(this.rewardButton = new GuiButton(2, this.guiLeft + 119, this.guiTop + 59, 50, 20, "Reward"));
 			
-			AVIMod.instance.netHandler.sendToServer(new PacketRefreshQuests(this.theVillager));
+			VillagerQuestsMod.instance.netHandler.sendToServer(new PacketRefreshQuests(this.theVillager));
 		}
 		else
 		{
@@ -178,17 +178,17 @@ public class GuiVillager2 extends GuiContainer
 		}
 		else if (button == this.shuffleQuestsButton)
 		{
-			AVIMod.instance.netHandler.sendToServer(new PacketShuffleQuests(this.theVillager));
+			VillagerQuestsMod.instance.netHandler.sendToServer(new PacketShuffleQuests(this.theVillager));
 		}
 		else if (button == this.rewardButton)
 		{
-			AVIMod.instance.netHandler.sendToServer(new PacketRewardQuests(this.theVillager));
+			VillagerQuestsMod.instance.netHandler.sendToServer(new PacketRewardQuests(this.theVillager));
 		}
 		
 		if (flag)
 		{
 			this.villagerContainer.setCurrentRecipeIndex(this.currentRecipeIndex);
-			AVIMod.instance.netHandler.sendToServer(new PacketSetRecipe(this.currentRecipeIndex));
+			VillagerQuestsMod.instance.netHandler.sendToServer(new PacketSetRecipe(this.currentRecipeIndex));
 		}
 	}
 	

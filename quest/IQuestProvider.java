@@ -1,6 +1,4 @@
-package clashsoft.mods.avi.api;
-
-import clashsoft.mods.avi.quest.QuestList;
+package clashsoft.mods.villagerquests.quest;
 
 import net.minecraft.entity.IMerchant;
 import net.minecraft.entity.player.EntityPlayerMP;

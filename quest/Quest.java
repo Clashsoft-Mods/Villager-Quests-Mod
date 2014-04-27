@@ -1,4 +1,4 @@
-package clashsoft.mods.avi.quest;
+package clashsoft.mods.villagerquests.quest;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,8 +7,7 @@ import java.util.Random;
 
 import clashsoft.cslib.minecraft.lang.I18n;
 import clashsoft.cslib.util.CSString;
-import clashsoft.mods.avi.api.IQuestProvider;
-import clashsoft.mods.avi.quest.type.QuestType;
+import clashsoft.mods.villagerquests.quest.type.QuestType;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;

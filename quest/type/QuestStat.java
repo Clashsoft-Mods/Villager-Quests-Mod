@@ -1,4 +1,4 @@
-package clashsoft.mods.avi.quest.type;
+package clashsoft.mods.villagerquests.quest.type;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.stats.Achievement;

@@ -1,8 +1,8 @@
-package clashsoft.mods.avi.network;
+package clashsoft.mods.villagerquests.network;
 
 import clashsoft.cslib.minecraft.network.CSPacket;
-import clashsoft.mods.avi.entity.EntityVillager2;
-import clashsoft.mods.avi.quest.QuestList;
+import clashsoft.mods.villagerquests.entity.EntityVillager2;
+import clashsoft.mods.villagerquests.quest.QuestList;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;

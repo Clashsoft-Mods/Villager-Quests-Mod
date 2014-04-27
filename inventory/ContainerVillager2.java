@@ -1,6 +1,6 @@
-package clashsoft.mods.avi.inventory;
+package clashsoft.mods.villagerquests.inventory;
 
-import clashsoft.mods.avi.api.IQuestProvider;
+import clashsoft.mods.villagerquests.quest.IQuestProvider;
 
 import net.minecraft.entity.IMerchant;
 import net.minecraft.entity.player.EntityPlayer;

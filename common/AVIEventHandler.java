@@ -1,6 +1,6 @@
-package clashsoft.mods.avi.common;
+package clashsoft.mods.villagerquests.common;
 
-import clashsoft.mods.avi.entity.EntityVillager2;
+import clashsoft.mods.villagerquests.entity.EntityVillager2;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 import net.minecraft.entity.passive.EntityVillager;
