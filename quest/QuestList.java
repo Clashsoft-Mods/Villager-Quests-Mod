@@ -101,7 +101,6 @@ public class QuestList extends ArrayList<Quest>
 	
 	public void reward(EntityPlayer player)
 	{
-		int reward = 0;
 		for (Quest quest : this)
 		{
 			quest.checkCompleted(player);

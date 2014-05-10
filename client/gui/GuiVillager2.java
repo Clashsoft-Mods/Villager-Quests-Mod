@@ -33,8 +33,8 @@ public class GuiVillager2 extends GuiContainer
 {
 	public boolean					questMode		= false;
 	
-	public static ResourceLocation	questBackground	= new ResourceLocation("avi", "textures/gui/container/villager_quests.png");
-	public static ResourceLocation	tradeBackground	= new ResourceLocation("avi", "textures/gui/container/villager_trading.png");
+	public static ResourceLocation	questBackground	= new ResourceLocation("villagerquests", "textures/gui/container/villager_quests.png");
+	public static ResourceLocation	tradeBackground	= new ResourceLocation("villagerquests", "textures/gui/container/villager_trading.png");
 	
 	public EntityVillager2			theVillager;
 	public int						currentRecipeIndex;
@@ -58,7 +58,7 @@ public class GuiVillager2 extends GuiContainer
 	
 	@Override
 	public void initGui()
-	{
+	{	
 		super.initGui();
 		this.buttonList.clear();
 		
