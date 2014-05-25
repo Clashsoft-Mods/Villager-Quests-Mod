@@ -1,7 +1,7 @@
 package clashsoft.mods.villagerquests;
 
-import clashsoft.cslib.minecraft.ClashsoftMod;
 import clashsoft.cslib.minecraft.entity.CSEntities;
+import clashsoft.cslib.minecraft.init.ClashsoftMod;
 import clashsoft.cslib.minecraft.update.CSUpdate;
 import clashsoft.mods.villagerquests.common.AVIEventHandler;
 import clashsoft.mods.villagerquests.common.AVIProxy;
