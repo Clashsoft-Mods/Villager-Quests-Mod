@@ -1,0 +1,55 @@
+button.questmode=Switch to Quest Mode
+button.trademode=Switch to Trade Mode
+
+quest.completed=Completed
+quest.not_completed=Not completed yet
+quest.rewarded=Rewarded
+quest.not_rewarded=Click 'Reward' to receive your reward.
+quest.reward=Reward:
+
+quest.collect.generic=Collect %1$s
+quest.collect.generic.dest=Collect %2$d %1$s.
+quest.find.generic=Find a %1$s
+quest.find.generic.dest=Find at least one %1$s by mining %2$s.
+quest.craft.generic=Craft %1$s
+quest.craft.generic.dest=Craft %2$d %1$s.
+
+quest.collect.wood=Collect Wood
+quest.collect.wood.desc=Collect %d wood logs.
+quest.collect.stone=Collect Stone
+quest.collect.stone.desc=Collect %d stone blocks with a pickaxe.
+quest.collect.dirt=Collect Dirt
+quest.collect.dirt.desc=Collect %d dirt blocks.
+quest.collect.sand=Collect Sand
+quest.collect.sand.desc=Collect %d sand blocks.
+quest.collect.gravel=Collect Gravel
+quest.collect.gravel.desc=Collect %d gravel blocks.
+
+quest.find.coal=Find some Coal
+quest.find.coal.desc=Find at least one Coal by mining Coal Ore.
+quest.find.iron=Find some Iron
+quest.find.iron.desc=Find at least one Iron Ingot by mining and smelting Iron Ore.
+quest.find.gold=Find some Gold
+quest.find.gold.desc=Find at least one Gold Ingot by mining and smelting Gold Ore.
+quest.find.lapis=Find Lapis Lazuli
+quest.find.lapis.desc=Find at least one Lapis Lazuli by mining Lapis Lazuli Ore.
+quest.find.redstone=Find Redstone
+quest.find.redstone.desc=Find at least one Redstone Dust by mining Redstone Ore.
+quest.find.diamond=Find a Diamond
+quest.find.diamond.desc=Find at least one Diamond by mining Diamond Ore.
+quest.find.emerald=Find an Emerald
+quest.find.emerald.desc=Find at least one Emerald by mining Emerald Ore.
+
+quest.craft.planks=Craft Planks
+quest.craft.planks.desc=Craft %d wooden planks.
+quest.craft.sticks=Craft Sticks
+quest.craft.sticks.desc=Craft %d wooden sticks.
+
+quest.dungeon=Find a Dungeon
+quest.dungeon.desc=Find an underground Dungeon.
+
+quest.nether=Visit the Nether
+quest.nether.desc=Build a portal to the nether and go through.
+
+quest.end=Visit the End
+quest.end.desc=Find the End Portal in a stronghold and go through.
