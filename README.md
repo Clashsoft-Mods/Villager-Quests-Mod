@@ -1,4 +1,5 @@
-Advanced-Villager-Interaction
+Villager Quests Mod
 =============================
+The Villager Quests Mod is a Minecraft Mod that adds quests to villagers.
 
-Modjam 3 mod
+It was originally created for the third Modjam under the name "Advanced Villager Interaction".
