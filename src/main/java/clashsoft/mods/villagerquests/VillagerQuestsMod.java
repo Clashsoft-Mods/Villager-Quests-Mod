@@ -10,7 +10,6 @@ import clashsoft.mods.villagerquests.network.AVINetHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
-import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -18,16 +17,15 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 @Mod(modid = VillagerQuestsMod.MODID, name = VillagerQuestsMod.NAME, version = VillagerQuestsMod.VERSION)
 public class VillagerQuestsMod extends ClashsoftMod<AVINetHandler>
 {
-	public static final String	MODID	= "villagerquests";
-	public static final String	NAME	= "Villager Quests Mod";
-	public static final String	ACRONYM	= "vqm";
-	public static final String	VERSION	= CSUpdate.CURRENT_VERSION + "-1.0.0";
+	public static final String		MODID	= "villagerquests";
+	public static final String		NAME	= "Villager Quests Mod";
+	public static final String		ACRONYM	= "vqm";
+	public static final String		VERSION	= CSUpdate.CURRENT_VERSION + "-1.0.0";
 	
 	@Instance(MODID)
-	public static VillagerQuestsMod		instance;
+	public static VillagerQuestsMod	instance;
 	
-	@SidedProxy(clientSide = "clashsoft.mods.villagerquests.client.AVIClientProxy", serverSide = "clashsoft.mods.villagerquests.common.AVIProxy")
-	public static AVIProxy		proxy;
+	public static AVIProxy			proxy	= createProxy("clashsoft.mods.villagerquests.client.AVIClientProxy", "clashsoft.mods.villagerquests.common.AVIProxy");
 	
 	public VillagerQuestsMod()
 	{
