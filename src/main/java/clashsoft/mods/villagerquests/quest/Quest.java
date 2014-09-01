@@ -19,23 +19,26 @@ import net.minecraft.network.PacketBuffer;
 public class Quest
 {
 	private IQuestProvider	provider;
+	private EntityPlayer	player;
 	private QuestType		type;
-	public float				amount;
 	
-	private float			completion = -1F;
+	public float			amount;
+	public float			maxAmount;
+	private float			completion	= -1F;
+	
 	private boolean			rewarded;
-	
 	private List<ItemStack>	rewards;
 	
 	public Quest()
 	{
 	}
 	
-	public Quest(IQuestProvider provider, QuestType type, int amount)
+	public Quest(IQuestProvider provider, EntityPlayer player, QuestType type, float maxAmount)
 	{
 		this.provider = provider;
+		this.player = player;
 		this.type = type;
-		this.amount = amount;
+		this.maxAmount = maxAmount;
 	}
 	
 	public IQuestProvider getProvider()
@@ -58,7 +61,7 @@ public class Quest
 		float f;
 		if (this.hasAmount())
 		{
-			f = this.type.getReward(this.amount);
+			f = this.type.getReward(this.maxAmount);
 		}
 		else
 		{
@@ -72,11 +75,21 @@ public class Quest
 		this.provider = provider;
 	}
 	
+	public void setPlayer(EntityPlayer player)
+	{
+		if (this.player != player)
+		{
+			QuestList questList = QuestList.getPlayerQuests(player);
+			questList.add(this);
+			this.player = player;
+		}
+	}
+	
 	public static Quest random(IQuestProvider provider, Random seed)
 	{
 		QuestType type = QuestType.random(seed);
-		int amount = type.getAmount(seed);
-		return new Quest(provider, type, amount);
+		float amount = type.getRandomAmount(seed);
+		return new Quest(provider, null, type, amount);
 	}
 	
 	public boolean isCompleted()
@@ -112,7 +125,7 @@ public class Quest
 			return 0F;
 		}
 		
-		this.completion = this.type.getCompletion(player, this.amount);
+		this.completion = this.amount / this.maxAmount;
 		if (this.completion < 1F)
 		{
 			this.rewarded = false;
@@ -185,7 +198,7 @@ public class Quest
 	public void addDescription(EntityPlayer player, List<String> lines)
 	{
 		String name = I18n.getString(this.type.getName());
-		String desc = I18n.getString(this.type.getName() + ".desc", this.amount);
+		String desc = I18n.getString(this.type.getName() + ".desc", this.maxAmount);
 		
 		lines.add(name);
 		for (String s : CSString.cutString(desc, name.length() + 10))
@@ -216,6 +229,7 @@ public class Quest
 	{
 		nbt.setString("Type", this.type.getName());
 		nbt.setFloat("Amount", this.amount);
+		nbt.setFloat("MaxAmount", this.maxAmount);
 		nbt.setFloat("Completion", this.completion);
 		nbt.setBoolean("Rewarded", this.rewarded);
 	}
@@ -231,6 +245,7 @@ public class Quest
 			ex.printStackTrace();
 		}
 		buffer.writeFloat(this.amount);
+		buffer.writeFloat(this.maxAmount);
 		buffer.writeFloat(this.completion);
 		buffer.writeBoolean(this.rewarded);
 	}
@@ -238,7 +253,8 @@ public class Quest
 	public void readFromNBT(NBTTagCompound nbt)
 	{
 		this.type = QuestType.get(nbt.getString("Type"));
-		this.amount = nbt.getInteger("Amount");
+		this.amount = nbt.getFloat("Amount");
+		this.maxAmount = nbt.getFloat("MaxAmount");
 		this.completion = nbt.getFloat("Completion");
 		this.rewarded = nbt.getBoolean("Rewarded");
 	}
@@ -254,6 +270,7 @@ public class Quest
 			ex.printStackTrace();
 		}
 		this.amount = buffer.readFloat();
+		this.maxAmount = buffer.readFloat();
 		this.completion = buffer.readFloat();
 		this.rewarded = buffer.readBoolean();
 	}
@@ -264,6 +281,7 @@ public class Quest
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + Float.floatToIntBits(this.amount);
+		result = prime * result + Float.floatToIntBits(this.maxAmount);
 		result = prime * result + Float.floatToIntBits(this.completion);
 		result = prime * result + (this.rewarded ? 1231 : 1237);
 		result = prime * result + (this.type == null ? 0 : this.type.hashCode());
@@ -287,6 +305,10 @@ public class Quest
 		}
 		Quest other = (Quest) obj;
 		if (this.amount != other.amount)
+		{
+			return false;
+		}
+		if (this.maxAmount != other.maxAmount)
 		{
 			return false;
 		}
@@ -318,6 +340,7 @@ public class Quest
 		StringBuilder builder = new StringBuilder();
 		builder.append("Quest [type=").append(this.type);
 		builder.append(", amount=").append(this.amount);
+		builder.append(", maxAmount=").append(this.maxAmount);
 		builder.append(", completion=").append(this.completion);
 		builder.append(", rewarded=").append(this.rewarded);
 		builder.append("]");

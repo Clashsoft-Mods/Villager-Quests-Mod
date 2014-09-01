@@ -81,12 +81,7 @@ public class QuestType
 		return false;
 	}
 	
-	public int getAmount(Random random)
-	{
-		return 0;
-	}
-	
-	public float getCompletion(EntityPlayer player, float amount)
+	public float getRandomAmount(Random random)
 	{
 		return 1F;
 	}

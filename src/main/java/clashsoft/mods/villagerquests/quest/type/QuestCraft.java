@@ -3,7 +3,6 @@ package clashsoft.mods.villagerquests.quest.type;
 import java.util.Random;
 
 import net.minecraft.block.Block;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 
 public class QuestCraft extends QuestType
@@ -28,15 +27,9 @@ public class QuestCraft extends QuestType
 	}
 	
 	@Override
-	public int getAmount(Random random)
+	public float getRandomAmount(Random random)
 	{
-		int i = (int) (this.reward * 2.5F);
+		float i = this.reward * 2.5F;
 		return random.nextInt(16) + i;
-	}
-	
-	@Override
-	public float getCompletion(EntityPlayer player, float amount)
-	{
-		return QuestType.getItemCount(player, this.item, null) / amount;
 	}
 }

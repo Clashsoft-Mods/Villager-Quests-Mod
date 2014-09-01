@@ -3,6 +3,8 @@ package clashsoft.mods.villagerquests.quest;
 import java.util.ArrayList;
 import java.util.Random;
 
+import clashsoft.cslib.minecraft.entity.CSEntities;
+import clashsoft.mods.villagerquests.entity.VQEntityProperties;
 import clashsoft.mods.villagerquests.quest.type.QuestType;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -54,7 +56,7 @@ public class QuestList extends ArrayList<Quest>
 				{
 					while (quest.checkCompleted(player) && random.nextInt(1024) > 0)
 					{
-						quest.amount += quest.getType().getAmount(random);
+						quest.maxAmount += quest.getType().getRandomAmount(random);
 					}
 				}
 				else if (quest.checkCompleted(player))
@@ -91,6 +93,7 @@ public class QuestList extends ArrayList<Quest>
 		boolean flag = true;
 		for (Quest quest : this)
 		{
+			quest.setPlayer(player);
 			flag &= quest.checkCompleted(player) & quest.isRewarded();
 		}
 		if (flag)
@@ -165,5 +168,11 @@ public class QuestList extends ArrayList<Quest>
 		}
 		
 		return quests;
+	}
+
+	public static QuestList getPlayerQuests(EntityPlayer harvester)
+	{
+		VQEntityProperties properties = (VQEntityProperties) CSEntities.getProperties("PlayerQuests", harvester);
+		return properties.getQuests();
 	}
 }
