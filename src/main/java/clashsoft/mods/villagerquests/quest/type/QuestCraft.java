@@ -35,8 +35,8 @@ public class QuestCraft extends QuestType
 	}
 	
 	@Override
-	public boolean isCompleted(EntityPlayer player, int amount)
+	public float getCompletion(EntityPlayer player, float amount)
 	{
-		return QuestType.getItemCount(player, this.item, null) >= amount;
+		return QuestType.getItemCount(player, this.item, null) / amount;
 	}
 }

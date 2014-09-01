@@ -23,8 +23,8 @@ public class QuestStat extends QuestType
 	}
 	
 	@Override
-	public boolean isCompleted(EntityPlayer player, int amount)
+	public float getCompletion(EntityPlayer player, float amount)
 	{
-		return getStats(player).writeStat(this.stat) > 0;
+		return getStats(player).writeStat(this.stat) / amount;
 	}
 }

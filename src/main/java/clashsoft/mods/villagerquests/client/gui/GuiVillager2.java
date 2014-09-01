@@ -1,6 +1,7 @@
 package clashsoft.mods.villagerquests.client.gui;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
@@ -58,7 +59,7 @@ public class GuiVillager2 extends GuiContainer
 	
 	@Override
 	public void initGui()
-	{	
+	{
 		super.initGui();
 		this.buttonList.clear();
 		
@@ -128,8 +129,12 @@ public class GuiVillager2 extends GuiContainer
 						continue;
 					}
 				}
-				
-				if (this.func_146978_c(k, l, 108, 18, mx, my))
+				else if (this.func_146978_c(k + 3, l + 3, 13, 13, mx, my))
+				{
+					List<String> lines = Arrays.asList(I18n.getString("quest.completion", quest.getCompletion() * 100F));
+					this.drawHoveringText(lines, mouseX - this.guiLeft, mouseY - this.guiTop, this.fontRendererObj);
+				}
+				else if (this.func_146978_c(k, l, 108, 18, mx, my))
 				{
 					List<String> lines = new ArrayList();
 					quest.addDescription(this.mc.thePlayer, lines);
@@ -234,13 +239,20 @@ public class GuiVillager2 extends GuiContainer
 					}
 				}
 				
+				float completion = quest.getCompletion();
+				int completion1 = (int) (completion * 13);
+				int completion2 = 13 - completion1;
+				
+				this.drawTexturedModalRect(k + 3, l + 3, 176, 116, 13, completion2);
+				this.drawTexturedModalRect(k + 3, l + 3 + completion2, 189, 116 + completion2, 13, completion1);
+				
 				int icon = QuestType.rewardIcon(quest.getReward());
 				if (icon != -1)
 				{
 					this.drawTexturedModalRect(k + 92, l + 4, 108 + icon * 12, 166, 12, 12);
 				}
 				
-				this.fontRendererObj.drawStringWithShadow(I18n.getString(quest.getName()), k + 3, l + 5, color);
+				this.fontRendererObj.drawStringWithShadow(I18n.getString(quest.getName()), k + 19, l + 5, color);
 				l += 19;
 			}
 		}

@@ -20,9 +20,9 @@ public class Quest
 {
 	private IQuestProvider	provider;
 	private QuestType		type;
-	public int				amount;
+	public float				amount;
 	
-	private boolean			completed;
+	private float			completion = -1F;
 	private boolean			rewarded;
 	
 	private List<ItemStack>	rewards;
@@ -81,7 +81,12 @@ public class Quest
 	
 	public boolean isCompleted()
 	{
-		return this.completed;
+		return this.completion >= 1F;
+	}
+	
+	public float getCompletion()
+	{
+		return this.completion;
 	}
 	
 	public boolean isRewarded()
@@ -96,17 +101,23 @@ public class Quest
 	
 	public boolean checkCompleted(EntityPlayer player)
 	{
+		this.getCompletion(player);
+		return this.isCompleted();
+	}
+	
+	public float getCompletion(EntityPlayer player)
+	{
 		if (player == null)
 		{
-			return false;
+			return 0F;
 		}
 		
-		this.completed = this.type.isCompleted(player, this.amount);
-		if (!this.completed)
+		this.completion = this.type.getCompletion(player, this.amount);
+		if (this.completion < 1F)
 		{
 			this.rewarded = false;
 		}
-		return this.completed;
+		return this.completion;
 	}
 	
 	public List<ItemStack> getRewards()
@@ -161,7 +172,7 @@ public class Quest
 	
 	public void reward(EntityPlayer player)
 	{
-		if (this.completed && !this.rewarded)
+		if (this.isCompleted() && !this.rewarded)
 		{
 			for (ItemStack stack : this.getRewards())
 			{
@@ -182,7 +193,7 @@ public class Quest
 			lines.add("\u00a77" + s);
 		}
 		
-		if (this.completed)
+		if (this.isCompleted())
 		{
 			lines.add("\u00a7a\u00a7o" + I18n.getString("quest.completed"));
 			
@@ -204,8 +215,8 @@ public class Quest
 	public void writeToNBT(NBTTagCompound nbt)
 	{
 		nbt.setString("Type", this.type.getName());
-		nbt.setInteger("Amount", this.amount);
-		nbt.setBoolean("Completed", this.completed);
+		nbt.setFloat("Amount", this.amount);
+		nbt.setFloat("Completion", this.completion);
 		nbt.setBoolean("Rewarded", this.rewarded);
 	}
 	
@@ -219,8 +230,8 @@ public class Quest
 		{
 			ex.printStackTrace();
 		}
-		buffer.writeInt(this.amount);
-		buffer.writeBoolean(this.completed);
+		buffer.writeFloat(this.amount);
+		buffer.writeFloat(this.completion);
 		buffer.writeBoolean(this.rewarded);
 	}
 	
@@ -228,7 +239,7 @@ public class Quest
 	{
 		this.type = QuestType.get(nbt.getString("Type"));
 		this.amount = nbt.getInteger("Amount");
-		this.completed = nbt.getBoolean("Completed");
+		this.completion = nbt.getFloat("Completion");
 		this.rewarded = nbt.getBoolean("Rewarded");
 	}
 	
@@ -242,8 +253,8 @@ public class Quest
 		{
 			ex.printStackTrace();
 		}
-		this.amount = buffer.readInt();
-		this.completed = buffer.readBoolean();
+		this.amount = buffer.readFloat();
+		this.completion = buffer.readFloat();
 		this.rewarded = buffer.readBoolean();
 	}
 	
@@ -252,8 +263,8 @@ public class Quest
 	{
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + this.amount;
-		result = prime * result + (this.completed ? 1231 : 1237);
+		result = prime * result + Float.floatToIntBits(this.amount);
+		result = prime * result + Float.floatToIntBits(this.completion);
 		result = prime * result + (this.rewarded ? 1231 : 1237);
 		result = prime * result + (this.type == null ? 0 : this.type.hashCode());
 		return result;
@@ -279,7 +290,7 @@ public class Quest
 		{
 			return false;
 		}
-		if (this.completed != other.completed)
+		if (this.completion != other.completion)
 		{
 			return false;
 		}
@@ -307,7 +318,7 @@ public class Quest
 		StringBuilder builder = new StringBuilder();
 		builder.append("Quest [type=").append(this.type);
 		builder.append(", amount=").append(this.amount);
-		builder.append(", completed=").append(this.completed);
+		builder.append(", completion=").append(this.completion);
 		builder.append(", rewarded=").append(this.rewarded);
 		builder.append("]");
 		return builder.toString();

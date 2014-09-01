@@ -71,7 +71,7 @@ public class QuestType
 		return this.reward;
 	}
 	
-	public float getReward(int amount)
+	public float getReward(float amount)
 	{
 		return this.reward * amount;
 	}
@@ -86,9 +86,9 @@ public class QuestType
 		return 0;
 	}
 	
-	public boolean isCompleted(EntityPlayer player, int amount)
+	public float getCompletion(EntityPlayer player, float amount)
 	{
-		return false;
+		return 1F;
 	}
 	
 	public static int rewardIcon(int reward)
