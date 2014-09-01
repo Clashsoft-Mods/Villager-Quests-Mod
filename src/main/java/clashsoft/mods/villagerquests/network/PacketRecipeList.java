@@ -1,5 +1,7 @@
 package clashsoft.mods.villagerquests.network;
 
+import java.io.IOException;
+
 import clashsoft.cslib.minecraft.network.CSPacket;
 import clashsoft.mods.villagerquests.entity.EntityVillager2;
 
@@ -27,14 +29,28 @@ public class PacketRecipeList extends CSPacket
 	public void write(PacketBuffer buf)
 	{
 		buf.writeInt(this.villager);
-		this.recipeList.func_151391_a(buf);
+		try
+		{
+			this.recipeList.func_151391_a(buf);
+		}
+		catch (IOException ex)
+		{
+			ex.printStackTrace();
+		}
 	}
 	
 	@Override
 	public void read(PacketBuffer buf)
 	{
 		this.villager = buf.readInt();
-		this.recipeList = MerchantRecipeList.func_151390_b(buf);
+		try
+		{
+			this.recipeList = MerchantRecipeList.func_151390_b(buf);
+		}
+		catch (IOException ex)
+		{
+			ex.printStackTrace();
+		}
 	}
 	
 	@Override
