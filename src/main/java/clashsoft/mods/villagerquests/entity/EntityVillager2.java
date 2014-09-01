@@ -117,9 +117,6 @@ public class EntityVillager2 extends EntityVillager implements IQuestProvider
 			
 			return true;
 		}
-		else
-		{
-			return false;
-		}
+		return false;
 	}
 }

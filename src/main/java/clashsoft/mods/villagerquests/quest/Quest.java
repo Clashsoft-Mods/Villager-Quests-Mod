@@ -1,5 +1,6 @@
 package clashsoft.mods.villagerquests.quest;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -164,9 +165,7 @@ public class Quest
 		{
 			for (ItemStack stack : this.getRewards())
 			{
-				if (player.inventory.addItemStackToInventory(stack))
-				{
-				}
+				player.inventory.addItemStackToInventory(stack);
 			}
 			this.rewarded = true;
 		}
@@ -174,10 +173,11 @@ public class Quest
 	
 	public void addDescription(EntityPlayer player, List<String> lines)
 	{
-		lines.add(I18n.getString(this.type.getName()));
+		String name = I18n.getString(this.type.getName());
 		String desc = I18n.getString(this.type.getName() + ".desc", this.amount);
 		
-		for (String s : CSString.lineArray(CSString.cutString(desc, 20)))
+		lines.add(name);
+		for (String s : CSString.cutString(desc, name.length() + 10))
 		{
 			lines.add("\u00a77" + s);
 		}
@@ -211,7 +211,14 @@ public class Quest
 	
 	public void writeToBuffer(PacketBuffer buffer)
 	{
-		buffer.writeStringToBuffer(this.type.getName());
+		try
+		{
+			buffer.writeStringToBuffer(this.type.getName());
+		}
+		catch (IOException ex)
+		{
+			ex.printStackTrace();
+		}
 		buffer.writeInt(this.amount);
 		buffer.writeBoolean(this.completed);
 		buffer.writeBoolean(this.rewarded);
@@ -227,7 +234,14 @@ public class Quest
 	
 	public void readFromBuffer(PacketBuffer buffer)
 	{
-		this.type = QuestType.get(buffer.readStringFromBuffer(0xFFFF));
+		try
+		{
+			this.type = QuestType.get(buffer.readStringFromBuffer(0xFFFF));
+		}
+		catch (IOException ex)
+		{
+			ex.printStackTrace();
+		}
 		this.amount = buffer.readInt();
 		this.completed = buffer.readBoolean();
 		this.rewarded = buffer.readBoolean();
