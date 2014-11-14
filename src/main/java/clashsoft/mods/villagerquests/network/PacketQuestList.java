@@ -1,5 +1,7 @@
 package clashsoft.mods.villagerquests.network;
 
+import java.io.IOException;
+
 import clashsoft.cslib.minecraft.network.CSPacket;
 import clashsoft.mods.villagerquests.entity.EntityVillager2;
 import clashsoft.mods.villagerquests.quest.QuestList;
@@ -24,14 +26,14 @@ public class PacketQuestList extends CSPacket
 	}
 	
 	@Override
-	public void write(PacketBuffer buf)
+	public void write(PacketBuffer buf) throws IOException
 	{
 		buf.writeInt(this.villager);
 		this.questList.writeToBuffer(buf);
 	}
 	
 	@Override
-	public void read(PacketBuffer buf)
+	public void read(PacketBuffer buf) throws IOException
 	{
 		this.villager = buf.readInt();
 		this.questList = QuestList.readFromBuffer(buf);

@@ -12,6 +12,4 @@ public interface IQuestProvider extends IMerchant
 	public void rewardQuests(EntityPlayerMP player);
 	
 	public QuestList getQuests();
-	
-	public float getRewardMultiplier();
 }

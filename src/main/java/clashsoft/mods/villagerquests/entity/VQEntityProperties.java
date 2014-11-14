@@ -1,20 +1,22 @@
 package clashsoft.mods.villagerquests.entity;
 
+import clashsoft.mods.villagerquests.quest.Quest;
 import clashsoft.mods.villagerquests.quest.QuestList;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IExtendedEntityProperties;
 
 public class VQEntityProperties implements IExtendedEntityProperties
 {
-	public Entity		entity;
-	protected QuestList	quests;
+	public EntityPlayer	player;
+	protected QuestList	quests	= new QuestList();
 	
 	public VQEntityProperties(Entity entity)
 	{
-		this.entity = entity;
+		this.player = (EntityPlayer) entity;
 	}
 	
 	@Override
@@ -26,7 +28,13 @@ public class VQEntityProperties implements IExtendedEntityProperties
 	@Override
 	public void loadNBTData(NBTTagCompound compound)
 	{
-		this.quests = QuestList.readFromNBT(compound);
+		for (Quest quest : QuestList.readFromNBT(compound))
+		{
+			if (!quest.isCompleted(this.player))
+			{
+				this.quests.add(quest);
+			}
+		}
 	}
 	
 	public QuestList getQuests()

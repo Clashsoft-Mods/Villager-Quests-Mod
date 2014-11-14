@@ -1,5 +1,6 @@
 package clashsoft.mods.villagerquests.quest;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -16,30 +17,8 @@ public class QuestList extends ArrayList<Quest>
 {
 	private static final long	serialVersionUID	= -3968245030216357893L;
 	
-	public IQuestProvider		provider;
-	
-	public QuestList(IQuestProvider provider)
+	public QuestList()
 	{
-		this.provider = provider;
-	}
-	
-	public void setProvider(IQuestProvider provider)
-	{
-		this.provider = provider;
-		for (Quest quest : this)
-		{
-			if (quest != null)
-			{
-				quest.setProvider(provider);
-			}
-		}
-	}
-	
-	@Override
-	public boolean add(Quest quest)
-	{
-		quest.setProvider(this.provider);
-		return super.add(quest);
 	}
 	
 	public void shuffle(EntityPlayer player, Random random)
@@ -48,7 +27,7 @@ public class QuestList extends ArrayList<Quest>
 		int len = QuestType.questList.size();
 		for (int i = 0; i < len; i++)
 		{
-			Quest quest = Quest.random(this.provider, random);
+			Quest quest = Quest.random(random);
 			
 			if (!this.containsType(quest.getType()))
 			{
@@ -72,8 +51,6 @@ public class QuestList extends ArrayList<Quest>
 				}
 			}
 		}
-		
-		this.refresh(player, random);
 	}
 	
 	public boolean containsType(QuestType type)
@@ -90,10 +67,16 @@ public class QuestList extends ArrayList<Quest>
 	
 	public void refresh(EntityPlayer player, Random random)
 	{
+		QuestList playerQuests = QuestList.getPlayerQuests(player);
+		
 		boolean flag = true;
 		for (Quest quest : this)
 		{
-			quest.setPlayer(player);
+			if (playerQuests != null && !playerQuests.contains(quest))
+			{
+				playerQuests.add(quest);
+			}
+			
 			flag &= quest.checkCompleted(player) & quest.isRewarded();
 		}
 		if (flag)
@@ -123,7 +106,7 @@ public class QuestList extends ArrayList<Quest>
 		nbt.setTag("Quests", list);
 	}
 	
-	public void writeToBuffer(PacketBuffer buffer)
+	public void writeToBuffer(PacketBuffer buffer) throws IOException
 	{
 		buffer.writeShort(this.size());
 		for (Quest q : this)
@@ -134,7 +117,7 @@ public class QuestList extends ArrayList<Quest>
 	
 	public static QuestList readFromNBT(NBTTagCompound nbt)
 	{
-		QuestList quests = new QuestList(null);
+		QuestList quests = new QuestList();
 		
 		NBTTagList list = (NBTTagList) nbt.getTag("Quests");
 		if (list != null)
@@ -155,9 +138,9 @@ public class QuestList extends ArrayList<Quest>
 		return quests;
 	}
 	
-	public static QuestList readFromBuffer(PacketBuffer buffer)
+	public static QuestList readFromBuffer(PacketBuffer buffer) throws IOException
 	{
-		QuestList quests = new QuestList(null);
+		QuestList quests = new QuestList();
 		
 		int size = buffer.readShort();
 		for (int i = 0; i < size; i++)
@@ -169,9 +152,13 @@ public class QuestList extends ArrayList<Quest>
 		
 		return quests;
 	}
-
+	
 	public static QuestList getPlayerQuests(EntityPlayer harvester)
 	{
+		if (harvester == null)
+		{
+			return null;
+		}
 		VQEntityProperties properties = (VQEntityProperties) CSEntities.getProperties("PlayerQuests", harvester);
 		return properties.getQuests();
 	}

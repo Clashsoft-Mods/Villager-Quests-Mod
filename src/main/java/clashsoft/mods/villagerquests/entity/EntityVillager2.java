@@ -7,6 +7,7 @@ import clashsoft.mods.villagerquests.VillagerQuestsMod;
 import clashsoft.mods.villagerquests.network.PacketQuestList;
 import clashsoft.mods.villagerquests.network.PacketRecipeList;
 import clashsoft.mods.villagerquests.quest.IQuestProvider;
+import clashsoft.mods.villagerquests.quest.Quest;
 import clashsoft.mods.villagerquests.quest.QuestList;
 
 import net.minecraft.entity.passive.EntityVillager;
@@ -20,7 +21,7 @@ import net.minecraft.world.World;
 
 public class EntityVillager2 extends EntityVillager implements IQuestProvider
 {
-	public QuestList	quests	= new QuestList(this);
+	public QuestList	quests	= new QuestList();
 	public Random		questRandom;
 	
 	public EntityVillager2(World world)
@@ -42,7 +43,6 @@ public class EntityVillager2 extends EntityVillager implements IQuestProvider
 	
 	public void setQuests(QuestList questList)
 	{
-		questList.setProvider(this);
 		this.quests = questList;
 	}
 	
@@ -71,13 +71,16 @@ public class EntityVillager2 extends EntityVillager implements IQuestProvider
 	
 	public void syncQuests(EntityPlayerMP player)
 	{
+		QuestList quests = QuestList.getPlayerQuests(player);
+		for (Quest quest : this.quests)
+		{
+			if (!quests.contains(quest))
+			{
+				quests.add(quest);
+			}
+		}
+		
 		VillagerQuestsMod.instance.netHandler.sendTo(new PacketQuestList(this, this.quests), player);
-	}
-	
-	@Override
-	public float getRewardMultiplier()
-	{
-		return 1F;
 	}
 	
 	@Override

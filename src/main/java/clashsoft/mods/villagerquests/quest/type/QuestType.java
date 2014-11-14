@@ -8,7 +8,6 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
-import net.minecraft.stats.AchievementList;
 import net.minecraft.stats.StatBase;
 import net.minecraft.stats.StatList;
 import net.minecraft.stats.StatisticsFile;
@@ -18,23 +17,23 @@ public class QuestType
 	public static Map<String, QuestType>	questMap		= new HashMap();
 	public static List<QuestType>			questList		= new ArrayList();
 	
-	public static QuestType					collectWood		= new QuestCollect("quest.collect.wood", 1.25F, Blocks.log);
-	public static QuestType					collectStone	= new QuestCollect("quest.collect.stone", 2F, Blocks.stone);
-	public static QuestType					collectDirt		= new QuestCollect("quest.collect.dirt", 1F, Blocks.dirt);
-	public static QuestType					collectSand		= new QuestCollect("quest.collect.sand", 1.1F, Blocks.sand);
-	public static QuestType					collectGravel	= new QuestCollect("quest.collect.gravel", 1.1F, Blocks.gravel);
+	public static QuestType					collectWood		= new QuestMine("quest.collect.wood", 1.25F, Blocks.log);
+	public static QuestType					collectStone	= new QuestMine("quest.collect.stone", 2F, Blocks.stone);
+	public static QuestType					collectDirt		= new QuestMine("quest.collect.dirt", 1F, Blocks.dirt);
+	public static QuestType					collectSand		= new QuestMine("quest.collect.sand", 1.1F, Blocks.sand);
+	public static QuestType					collectGravel	= new QuestMine("quest.collect.gravel", 1.1F, Blocks.gravel);
 	
-	public static QuestType					findCoal		= new QuestFind("quest.find.coal", 5F, Items.coal, Blocks.coal_ore);
-	public static QuestType					findIron		= new QuestFind("quest.find.iron", 7.5F, Items.iron_ingot, Blocks.iron_ore);
-	public static QuestType					findGold		= new QuestFind("quest.find.gold", 10F, Items.gold_ingot, Blocks.gold_ore);
-	public static QuestType					findLapis		= new QuestFind("quest.find.lapis", 12.5F, null, Blocks.lapis_ore);
-	public static QuestType					findRedstone	= new QuestFind("quest.find.redstone", 15F, Items.redstone, Blocks.redstone_ore);
-	public static QuestType					findEmerald		= new QuestFind("quest.find.emerald", 17.5F, Items.emerald, Blocks.emerald_ore);
-	public static QuestType					findDiamond		= new QuestFind("quest.find.diamond", 20F, Items.diamond, Blocks.diamond_ore);
+	public static QuestType					findCoal		= new QuestFind("quest.find.coal", 5F, Blocks.coal_ore);
+	public static QuestType					findIron		= new QuestFind("quest.find.iron", 7.5F, Blocks.iron_ore);
+	public static QuestType					findGold		= new QuestFind("quest.find.gold", 10F, Blocks.gold_ore);
+	public static QuestType					findLapis		= new QuestFind("quest.find.lapis", 12.5F, Blocks.lapis_ore);
+	public static QuestType					findRedstone	= new QuestFind("quest.find.redstone", 15F, Blocks.redstone_ore);
+	public static QuestType					findEmerald		= new QuestFind("quest.find.emerald", 17.5F, Blocks.emerald_ore);
+	public static QuestType					findDiamond		= new QuestFind("quest.find.diamond", 20F, Blocks.diamond_ore);
 	
-	public static QuestType					dungeon			= new QuestFind("quest.dungeon", 20F, null, Blocks.mossy_cobblestone);
-	public static QuestType					nether			= new QuestStat("quest.nether", 20F, AchievementList.portal);
-	public static QuestType					end				= new QuestStat("quest.end", 25F, AchievementList.theEnd);
+	public static QuestType					dungeon			= new QuestFind("quest.dungeon", 20F, Blocks.mossy_cobblestone);
+	public static QuestType					nether			= new QuestDimension("quest.nether", 20F, -1);
+	public static QuestType					end				= new QuestDimension("quest.end", 25F, 1);
 	
 	public static QuestType					craftPlanks		= new QuestCraft("quest.craft.planks", 1.5F, Blocks.planks);
 	public static QuestType					craftSticks		= new QuestCraft("quest.craft.sticks", 1F, Items.stick);

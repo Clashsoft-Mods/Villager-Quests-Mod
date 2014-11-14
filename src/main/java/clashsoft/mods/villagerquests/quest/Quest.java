@@ -1,11 +1,9 @@
 package clashsoft.mods.villagerquests.quest;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
+import clashsoft.cslib.minecraft.CSLib;
 import clashsoft.cslib.minecraft.lang.I18n;
 import clashsoft.cslib.util.CSString;
 import clashsoft.mods.villagerquests.quest.type.QuestType;
@@ -18,13 +16,12 @@ import net.minecraft.network.PacketBuffer;
 
 public class Quest
 {
-	private IQuestProvider	provider;
-	private EntityPlayer	player;
 	private QuestType		type;
 	
-	public float			amount;
-	public float			maxAmount;
+	protected float			amount;
+	protected float			maxAmount;
 	private float			completion	= -1F;
+	private EntityPlayer	completedBy;
 	
 	private boolean			rewarded;
 	private List<ItemStack>	rewards;
@@ -33,17 +30,17 @@ public class Quest
 	{
 	}
 	
-	public Quest(IQuestProvider provider, EntityPlayer player, QuestType type, float maxAmount)
+	public Quest(QuestType type, float maxAmount)
 	{
-		this.provider = provider;
-		this.player = player;
 		this.type = type;
 		this.maxAmount = maxAmount;
 	}
 	
-	public IQuestProvider getProvider()
+	public static Quest random(Random seed)
 	{
-		return this.provider;
+		QuestType type = QuestType.random(seed);
+		float amount = type.getRandomAmount(seed);
+		return new Quest(type, amount);
 	}
 	
 	public QuestType getType()
@@ -67,34 +64,17 @@ public class Quest
 		{
 			f = this.type.getReward();
 		}
-		return (int) (f * this.provider.getRewardMultiplier());
-	}
-	
-	public void setProvider(IQuestProvider provider)
-	{
-		this.provider = provider;
-	}
-	
-	public void setPlayer(EntityPlayer player)
-	{
-		if (this.player != player)
-		{
-			QuestList questList = QuestList.getPlayerQuests(player);
-			questList.add(this);
-			this.player = player;
-		}
-	}
-	
-	public static Quest random(IQuestProvider provider, Random seed)
-	{
-		QuestType type = QuestType.random(seed);
-		float amount = type.getRandomAmount(seed);
-		return new Quest(provider, null, type, amount);
+		return (int) f;
 	}
 	
 	public boolean isCompleted()
 	{
-		return this.completion >= 1F;
+		return this.completion >= 1F && this.completedBy != null;
+	}
+	
+	public boolean isCompleted(EntityPlayer player)
+	{
+		return this.completion >= 1F && (this.completedBy == player || this.completedBy.getUniqueID().equals(player.getUniqueID()));
 	}
 	
 	public float getCompletion()
@@ -112,13 +92,19 @@ public class Quest
 		return this.type.hasAmount();
 	}
 	
-	public boolean checkCompleted(EntityPlayer player)
+	public void addAmount(EntityPlayer player, float amount)
 	{
-		this.getCompletion(player);
-		return this.isCompleted();
+		this.amount += amount;
+		this.updateCompletion(player);
 	}
 	
-	public float getCompletion(EntityPlayer player)
+	public boolean checkCompleted(EntityPlayer player)
+	{
+		this.updateCompletion(player);
+		return this.completedBy == player;
+	}
+	
+	public float updateCompletion(EntityPlayer player)
 	{
 		if (player == null)
 		{
@@ -129,6 +115,11 @@ public class Quest
 		if (this.completion < 1F)
 		{
 			this.rewarded = false;
+		}
+		else
+		{
+			this.amount = this.maxAmount;
+			this.completedBy = player;
 		}
 		return this.completion;
 	}
@@ -185,7 +176,7 @@ public class Quest
 	
 	public void reward(EntityPlayer player)
 	{
-		if (this.isCompleted() && !this.rewarded)
+		if (this.isCompleted(player) && !this.rewarded)
 		{
 			for (ItemStack stack : this.getRewards())
 			{
@@ -198,7 +189,7 @@ public class Quest
 	public void addDescription(EntityPlayer player, List<String> lines)
 	{
 		String name = I18n.getString(this.type.getName());
-		String desc = I18n.getString(this.type.getName() + ".desc", this.maxAmount);
+		String desc = I18n.getString(this.type.getName() + ".desc", this.maxAmount, this.maxAmount - this.amount);
 		
 		lines.add(name);
 		for (String s : CSString.cutString(desc, name.length() + 10))
@@ -206,7 +197,8 @@ public class Quest
 			lines.add("\u00a77" + s);
 		}
 		
-		if (this.isCompleted())
+		// Completed by this player
+		if (this.isCompleted(player))
 		{
 			lines.add("\u00a7a\u00a7o" + I18n.getString("quest.completed"));
 			
@@ -219,6 +211,12 @@ public class Quest
 				lines.add("\u00a78" + I18n.getString("quest.not_rewarded"));
 			}
 		}
+		// Completed by someone else
+		else if (this.isCompleted())
+		{
+			lines.add("\u00a7c" + I18n.getString("quest.completed_by", this.completedBy.getCommandSenderName()));
+		}
+		// Not completed
 		else
 		{
 			lines.add("\u00a78\u00a7o" + I18n.getString("quest.not_completed"));
@@ -232,22 +230,21 @@ public class Quest
 		nbt.setFloat("MaxAmount", this.maxAmount);
 		nbt.setFloat("Completion", this.completion);
 		nbt.setBoolean("Rewarded", this.rewarded);
+		
+		if (this.completedBy != null)
+		{
+			nbt.setString("CompletedBy", this.completedBy.getUniqueID().toString());
+		}
 	}
 	
-	public void writeToBuffer(PacketBuffer buffer)
+	public void writeToBuffer(PacketBuffer buffer) throws IOException
 	{
-		try
-		{
-			buffer.writeStringToBuffer(this.type.getName());
-		}
-		catch (IOException ex)
-		{
-			ex.printStackTrace();
-		}
+		buffer.writeStringToBuffer(this.type.getName());
 		buffer.writeFloat(this.amount);
 		buffer.writeFloat(this.maxAmount);
 		buffer.writeFloat(this.completion);
 		buffer.writeBoolean(this.rewarded);
+		buffer.writeStringToBuffer(this.completedBy == null ? "" : this.completedBy.getUniqueID().toString());
 	}
 	
 	public void readFromNBT(NBTTagCompound nbt)
@@ -257,22 +254,26 @@ public class Quest
 		this.maxAmount = nbt.getFloat("MaxAmount");
 		this.completion = nbt.getFloat("Completion");
 		this.rewarded = nbt.getBoolean("Rewarded");
+		
+		if (nbt.hasKey("CompletedBy"))
+		{
+			this.completedBy = CSLib.proxy.findPlayer(UUID.fromString(nbt.getString("CompletedBy")));
+		}
 	}
 	
-	public void readFromBuffer(PacketBuffer buffer)
+	public void readFromBuffer(PacketBuffer buffer) throws IOException
 	{
-		try
-		{
-			this.type = QuestType.get(buffer.readStringFromBuffer(0xFFFF));
-		}
-		catch (IOException ex)
-		{
-			ex.printStackTrace();
-		}
+		this.type = QuestType.get(buffer.readStringFromBuffer(0xFF));
 		this.amount = buffer.readFloat();
 		this.maxAmount = buffer.readFloat();
 		this.completion = buffer.readFloat();
 		this.rewarded = buffer.readBoolean();
+		
+		String s = buffer.readStringFromBuffer(0xFF);
+		if (!s.isEmpty())
+		{
+			this.completedBy = CSLib.proxy.findPlayer(UUID.fromString(s));
+		}
 	}
 	
 	@Override
@@ -285,6 +286,7 @@ public class Quest
 		result = prime * result + Float.floatToIntBits(this.completion);
 		result = prime * result + (this.rewarded ? 1231 : 1237);
 		result = prime * result + (this.type == null ? 0 : this.type.hashCode());
+		result = prime * result + (this.completedBy == null ? 0 : this.completedBy.hashCode());
 		return result;
 	}
 	
@@ -331,6 +333,17 @@ public class Quest
 		{
 			return false;
 		}
+		if (this.completedBy == null)
+		{
+			if (other.completedBy != null)
+			{
+				return false;
+			}
+		}
+		else if (!this.completedBy.equals(other.completedBy))
+		{
+			return false;
+		}
 		return true;
 	}
 	
@@ -343,6 +356,7 @@ public class Quest
 		builder.append(", maxAmount=").append(this.maxAmount);
 		builder.append(", completion=").append(this.completion);
 		builder.append(", rewarded=").append(this.rewarded);
+		builder.append(", completedBy=").append(this.completedBy);
 		builder.append("]");
 		return builder.toString();
 	}
